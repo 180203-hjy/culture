@@ -15,6 +15,9 @@
         .option-btn { transition: all 0.2s; white-space: normal; text-align: left; line-height: 1.6; }
         .option-btn:hover:not(:disabled) { transform: translateX(6px); box-shadow: 0 4px 6px -1px rgba(126, 34, 206, 0.1), 0 2px 4px -1px rgba(126, 34, 206, 0.06); }
         
+        /* Multi-select active state */
+        .option-selected { background-color: #e9d5ff !important; border-color: #9333ea !important; color: #4c1d95 !important; font-weight: 700; transform: translateX(6px); box-shadow: 0 4px 6px -1px rgba(126, 34, 206, 0.1); }
+
         /* Animation */
         .shake { animation: shake 0.5s; }
         @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
@@ -32,7 +35,7 @@
 <body class="h-screen flex flex-col md:flex-row overflow-hidden text-slate-800">
 
     <!-- Sidebar Navigation (Purple Theme) -->
-    <aside class="w-full md:w-64 bg-purple-900 text-white flex flex-col shadow-2xl z-20 flex-shrink-0">
+    <aside class="w-full md:w-72 bg-purple-900 text-white flex flex-col shadow-2xl z-20 flex-shrink-0">
         <div class="p-5 bg-purple-950 font-bold text-xl flex items-center gap-3 border-b border-purple-800">
             <i class="fas fa-graduation-cap text-yellow-300 text-2xl"></i> 
             <span class="tracking-wide">+1教你学文化</span>
@@ -56,7 +59,7 @@
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">10</span>
             </button>
             <button onclick="switchModule('mc')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-mc">
-                <span class="font-medium"><i class="fas fa-list-ul w-6 text-center mr-2 opacity-80"></i>单项选择</span>
+                <span class="font-medium"><i class="fas fa-list-ul w-6 text-center mr-2 opacity-80"></i>选择题</span>
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">70</span>
             </button>
             <button onclick="switchModule('tf_a')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-tf_a">
@@ -106,18 +109,30 @@
                 <!-- Question -->
                 <div class="mb-8 flex-shrink-0">
                     <div class="flex justify-between items-center mb-4">
-                        <span class="inline-block bg-purple-100 text-purple-800 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider shadow-sm" id="q-type">Matching</span>
+                        <div class="flex items-center">
+                            <span class="inline-block bg-purple-100 text-purple-800 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider shadow-sm" id="q-type">Matching</span>
+                        </div>
                         <span class="text-gray-400 text-xs font-mono bg-gray-100 px-2 py-1 rounded" id="q-id">ID: #1</span>
                     </div>
-                    <!-- Question Text: Large, readable, justified -->
+                    <!-- Question Text -->
                     <h3 class="text-xl md:text-2xl font-bold text-gray-800 leading-relaxed text-justify" id="q-text">
                         Loading...
                     </h3>
+                    <div id="multi-hint" class="hidden mt-2 text-sm font-bold text-purple-600 bg-purple-50 inline-block px-3 py-1 rounded-md border border-purple-200">
+                        <i class="fas fa-check-double mr-1"></i> 多选题 (请勾选所有正确选项)
+                    </div>
                 </div>
 
                 <!-- Options / Input Container -->
                 <div id="options-container" class="space-y-4 flex-grow w-full">
                     <!-- Dynamic Content -->
+                </div>
+
+                <!-- Multi-select Submit Button Area -->
+                <div id="multi-actions" class="hidden mt-6">
+                    <button onclick="submitMultiAnswer()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg text-lg flex items-center justify-center">
+                        提交答案 (Submit) <i class="fas fa-paper-plane ml-2"></i>
+                    </button>
                 </div>
 
                 <!-- Feedback Area -->
@@ -150,7 +165,7 @@
     <script>
         // --- FULL DATABASE ---
         const DB = {
-            // Part 1: First 5 Questions (from Supplement)
+            // Part 1: First 5 Questions (Supplement)
             matching_basic: [
                 { id: 1, q: "Definition of: Racism", opts: ["Superior because of color of skin", "Anxiety from losing all familiar signs", "Rigid and irrational generalization about a group", "The belief that your own culture is correct"], ans: "Superior because of color of skin", exp: "Racism (种族主义) 指的是仅仅因为肤色或种族而产生的优越感。" },
                 { id: 2, q: "Definition of: Culture Shock", opts: ["Anxiety from losing all familiar signs", "Superior because of color of skin", "Refers to communication norms in different cultures", "The feeling of confusion or disorientation"], ans: "Anxiety from losing all familiar signs", exp: "Culture Shock (文化冲击) 是指因为失去了熟悉的符号和环境而产生的焦虑感。" },
@@ -187,7 +202,6 @@
                 { id: 25, q: "Definition of: Buffer", opts: ["A paragraph that is pleasant and says neither “yes” nor “no”", "A message starts with clearly stating the main idea", "Refers to the rate, pitch, and volume qualities", "The original language text of a translation"], ans: "A paragraph that is pleasant and says neither “yes” nor “no”", exp: "Buffer (缓冲段) 是坏消息信函中的开头段落，通常客套、愉快且不置可否，用于缓解冲击。" },
                 { id: 26, q: "Definition of: Direct plan message", opts: ["A message starts with clearly stating the main idea/good news first", "A paragraph that is pleasant and says neither “yes” nor “no”", "Style where people encode messages in context", "Refers to communication within and between businesses"], ans: "A message starts with clearly stating the main idea/good news first", exp: "Direct plan (直接法) 信息的特点是开门见山，首先说明主要观点或好消息。" }
             ],
-            // Part 3: Blanks (from Supplement)
             blanks: [
                 { id: 1, q: "Communication Process: If I am talking with a friend, and I want to tell them I disagree with them. I, the (1)________, will put my thoughts into words.", ans: "sender", exp: "发送者 (Sender) 是信息的发出方。" },
                 { id: 2, q: "Communication Process: I will put my thoughts into words, or (2)________ them.", ans: "encode", exp: "编码 (Encode) 是将思想转化为符号/语言的过程。" },
@@ -195,12 +209,11 @@
                 { id: 4, q: "Communication Process: My friend will then be the (4)________ because I have transmitted a message to them.", ans: "receiver", exp: "接收者 (Receiver) 是信息的接收方。" },
                 { id: 5, q: "Communication Process: They will (5)________ it to determine the meaning of what I have said.", ans: "decode", exp: "解码 (Decode) 是接收者解读并赋予信息意义的过程。" },
                 { id: 6, q: "Cultural Elements: The first is (6)________ which contains items like arrow heads, electric lights and airplanes.", ans: "artifacts", exp: "器物 (Artifacts) 是文化最表层的、可见的物质产品。" },
-                { id: 7, q: "Cultural Elements: The second element is (7)________ which involve things like the difference between right and wrong, the meaning of life etc.", ans: "values", exp: "价值观 (Values/Concepts) 涉及对是非对错的判断。" },
+                { id: 7, q: "Cultural Elements: The second element is (7)________ which involve things like the difference between right and wrong, the meaning of life etc. (Use one word)", ans: "values", exp: "价值观 (Values/Concepts) 涉及对是非对错的判断。" },
                 { id: 8, q: "Cultural Elements: The third element is (8)________ which exemplifies how we “put into practice” the second element.", ans: "behaviors", exp: "行为 (Behaviors) 是价值观的实践体现。" },
                 { id: 9, q: "Iceberg Model: The tip, the portion above the water, represents (9)________ elements of culture that can be seen by all.", ans: "visible", exp: "冰山水面以上的部分代表可见的 (visible) 文化要素（如行为、器物）。" },
                 { id: 10, q: "Iceberg Model: The cultural elements below the waterline are (10)________ and not readily recognized by those outside of our culture.", ans: "invisible", exp: "冰山水面以下的部分代表不可见的 (invisible) 文化要素（如价值观、信仰）。" }
             ],
-            // Part 4: MC (from Main Doc)
             mc: [
                 {id:1, q:"_____ is the total accumulation of beliefs, customs, values, behaviors, institutions and communication patterns that are shared, learned and passed down through the generations in an identifiable group of people.", opts:["intercultural communication", "culture", "business communication", "feedback"], ans:"culture", exp:"Culture (文化) 是一个群体共享、习得并代代相传的信仰、习俗、行为等的总和。"},
                 {id:2, q:"_____ is the communication at the same level in an organization.", opts:["horizontal communication", "ethnocentrism", "business communication", "lateral communication"], ans:"lateral communication", exp:"Lateral (或 Horizontal) communication 指组织中同一层级之间的沟通。"},
@@ -219,16 +232,19 @@
                 {id:15, q:"Which is the first phase of intercultural shock?", opts:["Honeymoon phase", "cultural shock phase", "recovery phase", "adjustment phase"], ans:"Honeymoon phase", exp:"文化冲击的第一阶段通常是蜜月期 (Honeymoon phase)，此时对新文化充满新鲜感。"},
                 {id:16, q:"Which is regarded as the “least intercultural” end of the continuum?", opts:["Intracultural communication", "Intercultural communication", "International communication", "Interracial communication"], ans:"Intracultural communication", exp:"Intracultural (文化内/族内) 沟通发生在同一文化成员之间，跨文化程度最低。"},
                 {id:17, q:"What is the setting or situation within which communication takes place?", opts:["Channel", "Feedback", "Context", "Noise"], ans:"Context", exp:"Context (语境/情境) 是沟通发生的环境或背景。"},
-                {id:18, q:"Which of the following belongs to social communication: (Multi-select)", opts:["Interpersonal communication", "Intrapersonal communication", "Organizational communication", "Interpersonal, Organizational & Mass communication (Correct Combo)"], ans:"Interpersonal, Organizational & Mass communication (Correct Combo)", exp:"社会沟通包括人际、组织和大众传播。(Intrapersonal 是内省沟通，通常不归类为社会沟通)"},
-                {id:19, q:"Intercultural business communication draws upon theories from a variety of disciplines, such as: (Multi-select)", opts:["Linguistics", "Education", "Psychology", "All of the above (Linguistics, Education, Psychology, Sociology, Mass comm)"], ans:"All of the above (Linguistics, Education, Psychology, Sociology, Mass comm)", exp:"跨文化商务沟通涉及语言学、教育学、心理学、社会学等多学科理论。"},
-                {id:20, q:"Which terms describe negative attitudes or actions based on cultural differences? (Multi-select)", opts:["Prejudice & Racism", "Cultural relativism", "Gender", "None"], ans:"Prejudice & Racism", exp:"Prejudice (偏见) 和 Racism (种族主义) 都是基于差异的负面态度或行为。"},
-                {id:21, q:"What may cause problems in intercultural communication? (Multi-select)", opts:["Ethnocentrism", "Stereotyping", "Prejudice", "All of the above (Ethnocentrism, Stereotyping, Prejudice, Racism)"], ans:"All of the above (Ethnocentrism, Stereotyping, Prejudice, Racism)", exp:"民族中心主义、刻板印象、偏见等都会阻碍跨文化沟通。"},
-                {id:22, q:"How do you improve your intercultural business communication skills? (Multi-select)", opts:["Take the time to learn", "Practise self-awareness", "Seek assistance", "All of the above (Incorporate what you’ve learned)"], ans:"All of the above (Incorporate what you’ve learned)", exp:"学习、自我觉察、寻求帮助和实践都是提高技能的方法。"},
+                // MULTI-SELECT START
+                {id:18, type:"multi", q:"Which of the following belongs to social communication: (Multi-select)", opts:["Interpersonal communication", "Intrapersonal communication", "Organizational communication", "Mass communication", "Animal communication"], ans:["Interpersonal communication", "Organizational communication", "Mass communication"], exp:"社会沟通包括人际、组织和大众传播。(Intrapersonal 是内省沟通，通常不归类为社会沟通)"},
+                {id:19, type:"multi", q:"Intercultural business communication draws upon theories from a variety of disciplines, such as: (Multi-select)", opts:["Linguistics", "Education", "Psychology", "Sociology", "Mass communication"], ans:["Linguistics", "Education", "Psychology", "Sociology", "Mass communication"], exp:"跨文化商务沟通涉及语言学、教育学、心理学、社会学等多学科理论。"},
+                {id:20, type:"multi", q:"Which terms describe negative attitudes or actions based on cultural differences? (Multi-select)", opts:["Prejudice", "Cultural relativism", "Racism", "Gender"], ans:["Prejudice", "Racism"], exp:"Prejudice (偏见) 和 Racism (种族主义) 都是基于差异的负面态度或行为。"},
+                {id:21, type:"multi", q:"What may cause problems in intercultural communication? (Multi-select)", opts:["Ethnocentrism", "Stereotyping", "Prejudice", "Racism"], ans:["Ethnocentrism", "Stereotyping", "Prejudice", "Racism"], exp:"民族中心主义、刻板印象、偏见等都会阻碍跨文化沟通。"},
+                {id:22, type:"multi", q:"How do you improve your intercultural business communication skills? (Multi-select)", opts:["Take the time to learn", "Practise self-awareness", "Seek assistance", "Incorporate what you’ve learned"], ans:["Take the time to learn", "Practise self-awareness", "Seek assistance", "Incorporate what you’ve learned"], exp:"学习、自我觉察、寻求帮助和实践都是提高技能的方法。"},
+                // MULTI-SELECT END
                 {id:23, q:"In intercultural communication studies, the values approach studies cultural differences in:", opts:["Dominant culture", "subculture", "co-culture", "sub-groups"], ans:"co-culture", exp:"价值观研究方法通常关注 co-culture (共文化/亚文化) 的差异。"},
                 {id:24, q:"Which culture believes that human can master nature?", opts:["Chinese", "African", "Native Indian", "American"], ans:"American", exp:"美国文化倾向于认为人定胜天 (Master nature)，而其他选项多倾向于顺应自然。"},
                 {id:25, q:"“What is different, is dangerous.” is the view of people from _____ culture.", opts:["high-context", "low-context", "high uncertainty avoidance", "low uncertainty avoidance"], ans:"high uncertainty avoidance", exp:"高不确定性规避 (High uncertainty avoidance) 的文化视“不同”为危险，因为他们害怕未知。"},
                 {id:26, q:"Which culture belongs to low-context culture?", opts:["China", "Korea", "Germany", "Japan"], ans:"Germany", exp:"德国是典型的低语境 (low-context) 文化，沟通直接。中日韩属于高语境。"},
-                {id:27, q:"Edward T. Hall categories culture to be either ____ or ____.", opts:["high-context / low-context", "high/low power distance", "masculine/feminine", "individualist/collectivist"], ans:"high-context / low-context", exp:"爱德华·霍尔 (Edward T. Hall) 提出了高/低语境 (High/Low Context) 理论。"},
+                // Question 27 - Multi-Select based on Doc
+                {id:27, type:"multi", q:"Edward T. Hall categories culture to be either ____ or ____.", opts:["high-context", "low-context", "high power distance", "low power distance"], ans:["high-context", "low-context"], exp:"霍尔 (Hall) 将文化分类为高语境 (High-context) 和低语境 (Low-context)。"},
                 {id:28, q:"Which of the following is NOT a basic element of culture?", opts:["personal preferences", "beliefs", "social practices", "norms"], ans:"personal preferences", exp:"个人喜好 (Personal preferences) 是个体的，不属于共享的文化要素。"},
                 {id:29, q:"Which of the following belongs to the outermost layer of the onion model of culture?", opts:["Landmark architectures (Symbols)", "heroes", "rituals", "values"], ans:"Landmark architectures (Symbols)", exp:"洋葱模型的最外层是符号 (Symbols)，如地标建筑。核心是价值观。"},
                 {id:30, q:"Which of the following is part of the tip of the iceberg model of culture?", opts:["beliefs", "norms", "food", "values"], ans:"food", exp:"食物 (Food) 属于可见的文化行为，位于冰山顶端。信仰、规范、价值观位于水下。"},
@@ -250,14 +266,19 @@
                 {id:46, q:"Comparing with Chinese, which verbal styles do Americans tend to use?", opts:["Direct and self-effacement.", "Direct and self-enhancement.", "Indirect and self-effacement.", "Indirect and self-enhancement."], ans:"Direct and self-enhancement.", exp:"与中国人相比，美国人倾向于使用直接 (Direct) 和自我彰显 (Self-enhancement) 的风格。"},
                 {id:47, q:"In which translation problem, can word order and syntactic function alter meaning a lot?", opts:["Lack of vocabulary equivalence.", "Lack of idiomatic equivalence.", "Lack of grammatical-syntactical equivalence.", "Lack of conceptual equivalence."], ans:"Lack of grammatical-syntactical equivalence.", exp:"语序和句法功能属于语法-句法对等 (Grammatical-syntactical equivalence) 的范畴。"},
                 {id:48, q:"Which verbal style emphasizes the importance of boasting about one's accomplishments and abilities?", opts:["Direct.", "Indirect.", "Self-enhancement.", "Self-effacement."], ans:"Self-enhancement.", exp:"自我彰显 (Self-enhancement) 风格强调吹嘘或展示自己的成就。"},
-                {id:49, q:"What can lead to translation problems? (Multi-select)", opts:["Lack of vocabulary equivalence", "Lack of idiomatic equivalence", "Lack of grammatical-syntactical equivalence", "All of the above (plus experiential/conceptual)"], ans:"All of the above (plus experiential/conceptual)", exp:"词汇、习语、语法句法、经验和概念的对等性缺失都会导致翻译问题。"},
+                // MULTI-SELECT START
+                {id:49, type:"multi", q:"What can lead to translation problems? (Multi-select)", opts:["Lack of vocabulary equivalence", "Lack of idiomatic equivalence", "Lack of grammatical-syntactical equivalence", "Lack of experiential equivalence", "Lack of conceptual equivalence"], ans:["Lack of vocabulary equivalence", "Lack of idiomatic equivalence", "Lack of grammatical-syntactical equivalence", "Lack of experiential equivalence", "Lack of conceptual equivalence"], exp:"词汇、习语、语法句法、经验和概念的对等性缺失都会导致翻译问题。"},
+                // MULTI-SELECT END
                 {id:50, q:"People in ______ cultures usually view silence as lack of communication and are generally ________ with it.", opts:["low context, uncomfortable", "high context, uncomfortable", "low context, comfortable", "high context, comfortable"], ans:"low context, uncomfortable", exp:"低语境文化 (low context) 的人通常视沉默为沟通中断，并对此感到不舒服 (uncomfortable)。"},
                 {id:51, q:"Which statements are correct about nonverbal communication?", opts:["Nonverbal behavior is easily controlled", "A smile sometimes doesn’t mean a sincere smile", "Nonverbal behavior accounts for much of the meaning we derive from conversation.", "Nonverbal communication is more than the complement of verbal communication."], ans:"Nonverbal behavior accounts for much of the meaning we derive from conversation.", exp:"非言语行为承载了对话中很大一部分的意义 (accounts for much of the meaning)。"},
-                {id:52, q:"How does nonverbal behavior control the pace or flow of communication?", opts:["Be silent", "Gesture of stopping", "Clap hands", "All of the above (Raise voice etc.)"], ans:"All of the above (Raise voice etc.)", exp:"沉默、手势、声音变化等非言语行为都可以控制沟通的节奏。"},
-                {id:53, q:"Which of the following belongs to nonverbal communication?", opts:["keep a 50 cm personal distance from a client", "being 15 minutes late for a meeting", "avoiding eye contact when talking to a client", "All (Silence/Gestures/Time)"], ans:"avoiding eye contact when talking to a client", exp:"避免眼神接触 (avoiding eye contact) 是一种典型的非言语沟通行为。"},
+                // Q52 - FIXED to Multi-Select (ABCD)
+                {id:52, type:"multi", q:"How does nonverbal behavior control the pace or flow of communication?", opts:["Be silent", "Gesture of stopping", "Clap hands", "Raise voice"], ans:["Be silent", "Gesture of stopping", "Clap hands", "Raise voice"], exp:"所有选项（沉默、手势、拍手、提高声音）都是控制沟通节奏的非言语方式。"},
+                // Question 53 - Multi-Select based on Doc
+                {id:53, type:"multi", q:"Which of the following belongs to nonverbal communication?", opts:["keep a 50 cm personal distance from a client", "being 15 minutes late for a meeting", "avoiding eye contact when talking to a client", "silence in a negotiation"], ans:["keep a 50 cm personal distance from a client", "being 15 minutes late for a meeting", "avoiding eye contact when talking to a client", "silence in a negotiation"], exp:"所有选项（距离、时间观念、眼神接触、沉默）都属于非言语沟通的范畴。"},
                 {id:54, q:"About eye contact, which of the following is right?", opts:["To look at someone in the eye in Japan is valued", "In Muslin countries men and women are not supposed to have much eye contact", "Chinese usually lower their eyes out of respect.", "In north America and northern Europe, eye contact shows openness, trustworthiness and integrity."], ans:"In north America and northern Europe, eye contact shows openness, trustworthiness and integrity.", exp:"在北美和北欧，眼神接触被视为开放、诚实和正直的表现。"},
-                {id:55, q:"Which of the following is right about the touch culture?", opts:["It refers to the culture whose people like to stand close while talking and touch each other frequently.", "Arabs, southern and western Europeans, Jews and Latins belong to touch culture", "Americans, northern Europeans and Orientals belong to no touch culture.", "For some cultures, it’s the powerful touch the less powerful..."], ans:"Arabs, southern and western Europeans, Jews and Latins belong to touch culture", exp:"阿拉伯人、南欧人、拉丁人属于接触文化 (touch culture)，习惯频繁的身体接触。"},
-                {id:56, q:"Which of the following belong to paralanguage?", opts:["laugh", "silence", "fillers like “un-huh”", "All of the above plus volume"], ans:"All of the above plus volume", exp:"副语言包括笑声、沉默、填充词以及音量等声音特征。"},
+                {id:55, q:"Which of the following is right about the touch culture?", opts:["It refers to the culture whose people like to stand close while talking, touch more frequently and speak in louder voices", "Arabs, southern and western Europeans, Jews and Latins belong to touch culture", "Americans, northern Europeans and Orientals belong to no touch culture.", "For some cultures, it’s the powerful touch the less powerful, but the less powerful may not touch the powerful"], ans:"Arabs, southern and western Europeans, Jews and Latins belong to touch culture", exp:"阿拉伯人、南欧人、拉丁人属于接触文化 (touch culture)，习惯频繁的身体接触。"},
+                // Q56 - FIXED to Multi-Select (ABCD)
+                {id:56, type:"multi", q:"Which of the following belong to paralanguage?", opts:["laugh", "silence", "fillers like “un-huh”", "volume"], ans:["laugh", "silence", "fillers like “un-huh”", "volume"], exp:"所有选项（笑、沉默、填充词、音量）都属于副语言 (Paralanguage)。"},
                 {id:57, q:"______ letters will explain the purpose within the first two paragraphs, which reflects their value of time and directness.", opts:["Japan", "Chinese", "American", "Arab"], ans:"American", exp:"美式 (American) 信函通常在开头两段直接说明目的，体现了对时间和直接性的重视。"},
                 {id:58, q:"_____ closing is trite and stereotyped by expressing wishes for receiver’s health or prosperity.", opts:["Japanese", "Chinese", "American", "Arab"], ans:"Chinese", exp:"中式 (Chinese) 信函结尾常包含对健康或繁荣的客套祝愿。"},
                 {id:59, q:"Hall describes proxemics as having two main types of space: territory and _________ space.", opts:["public", "personal", "intimate", "interpersonal"], ans:"personal", exp:"霍尔的近体学包括领地观念和个人空间 (personal space)。"},
@@ -266,11 +287,13 @@
                 {id:62, q:"Most Arabs, Mediterranean people, Indonesians and people in the Middle East evaluate closeness as _______. They belong to ______ cultures.", opts:["negative …low contact", "positive …high contact", "positive…low contact", "negative…high contact"], ans:"positive …high contact", exp:"阿拉伯和地中海地区的人视亲近为积极 (positive)，属于高接触 (high contact) 文化。"},
                 {id:63, q:"Remember to avoid using _________ in greeting and eating in India.", opts:["the right hand", "the left hand", "the chopsticks", "the knives and forks"], ans:"the left hand", exp:"在印度，左手 (left hand) 被视为不洁，应避免用于吃饭或问候。"},
                 {id:64, q:"In which country, it is inappropriate to use left hand to exchange business cards?", opts:["China", "Japan", "India", "USA"], ans:"India", exp:"同上，在印度不应用左手递名片。"},
-                {id:65, q:"Which statement regarding touch is incorrect?", opts:["In Thailand, it is offensive to touch the head.", "Japan is considered a 'don't touch' culture.", "Greece is considered a 'touch' culture.", "In Latin American countries, touching between men is unacceptable."], ans:"In Latin American countries, touching between men is unacceptable.", exp:"选项 D 是错误的。在拉美国家，男性之间的身体接触（如拥抱）是常见且可接受的。"},
+                {id:65, q:"Which statement regarding touch is incorrect?", opts:["In Thailand, it is offensive to touch the head.", "Japan is considered a \"don't touch\" culture.", "Greece is considered a \"touch\" culture.", "In Latin American countries, touching between men is unacceptable."], ans:"In Latin American countries, touching between men is unacceptable.", exp:"选项 D 是错误的。在拉美国家，男性之间的身体接触（如拥抱）是常见且可接受的。"},
                 {id:66, q:"__________ is who places a limp, lifeless hand sending only a negative message.", opts:["a dead fish hand shaker", "knuckle cruncher", "sanitary hand shaker", "lingering hand shaker"], ans:"a dead fish hand shaker", exp:"'死鱼'式握手 (dead fish) 指手掌无力、毫无生气的握手方式，传达负面信息。"},
                 {id:67, q:"When communicating with other people, remember that everyone wants to feel _______. (Choose best)", opts:["admired and cared for", "understood and important", "important, competent, and admired", "valued, respected, and understood"], ans:"valued, respected, and understood", exp:"沟通黄金法则：每个人都希望感到被重视、被尊重和被理解 (valued, respected, and understood)。"},
                 {id:68, q:"Which statements are correct about Japan?", opts:["Japan smile the way people from the United States do.", "Women show their teeth when they smile in public.", "One does not show feelings freely.", "The clerk greets clients in banks with a deep bow instead of a smile."], ans:"One does not show feelings freely.", exp:"日本文化较为内敛，人们通常不会随意表露情感 (does not show feelings freely)。"},
-                {id:69, q:"What are commonly-used complimentary closings in business letter? (Multi)", opts:["Cordially", "Yours faithfully", "Your sincerely", "All of the above"], ans:"All of the above", exp:"Cordially, Yours faithfully, Yours sincerely 都是常见的商务信函结语。"},
+                // MULTI-SELECT START
+                {id:69, type:"multi", q:"What are commonly-used complimentary closings in business letter? (Multi)", opts:["Cordially", "Yours faithfully", "Your sincerely", "Best regards"], ans:["Cordially", "Yours faithfully", "Your sincerely", "Best regards"], exp:"Cordially, Yours faithfully, Yours sincerely 都是常见的商务信函结语。"},
+                // MULTI-SELECT END
                 {id:70, q:"In low-context cultures, a deliberate concealment of emotion is considered to be __________.", opts:["poker-faced", "shamed", "insincere", "resentful"], ans:"insincere", exp:"在低语境文化中，刻意隐藏情感常被认为是不真诚 (insincere)。"}
             ],
             // Part 5: TF A (from Supplement, 40 questions)
@@ -367,7 +390,8 @@
                 {id:47, q:"Low-context cultures place less emphasis on nonverbal communication.", ans:"False", exp:"错误。虽然更依赖语言，但非言语依然重要（参考答案给F，可能强调非言语的普遍重要性）。"},
                 {id:48, q:"Cultures are primarily learned through education.", ans:"False", exp:"错误。文化更多通过社会化、家庭耳濡目染习得，不仅仅是学校教育。"},
                 {id:49, q:"Value is one basic element of culture.", ans:"True", exp:"正确。"},
-                {id:50, q:"Language holds us together as groups and differentiates us into groups.", ans:"False", exp:"错误。（注：Doc 1 说 T，Doc 2 参考答案给 F，可能是强调语言虽然有此功能但不是唯一因素，或特定语境下的判断。此处依据 Doc 2 答案给 F）"},
+                // Question 50 FIXED - ans: True
+                {id:50, q:"Language holds us together as groups and differentiates us into groups.", ans:"True", exp:"正确。（Doc 2 答案给 T）。"},
                 {id:51, q:"The Sami language of northern Scandinavia has 500 words for \"snow\", which indicates language as a reflection of the environment.", ans:"True", exp:"正确。"},
                 {id:52, q:"Sapir-Whorf hypothesis disagrees with Language determinism.", ans:"False", exp:"错误。该假说正是语言决定论的基础。"},
                 {id:53, q:"Cricket in English is a happy insect... Yet in Chinese cricket signifies the coming of autumn, so there is always a feeling of sadness attached to it.", ans:"True", exp:"正确。文化对同一事物的联想不同。"},
@@ -423,6 +447,7 @@
         let isShuffled = false;
         let questionOrder = [];
         let isProcessing = false;
+        let currentMultiSelection = []; // Store active selections for multi-choice
 
         const dom = {
             navBtns: document.querySelectorAll('.nav-btn'),
@@ -440,7 +465,9 @@
             feedbackIcon: document.getElementById('feedback-icon'),
             nextBtn: document.getElementById('next-btn'),
             prevBtn: document.getElementById('prev-btn'),
-            jumpInput: document.getElementById('jump-input')
+            jumpInput: document.getElementById('jump-input'),
+            multiActions: document.getElementById('multi-actions'),
+            multiHint: document.getElementById('multi-hint')
         };
 
         function init() {
@@ -469,7 +496,7 @@
                 'matching_basic': '核心连线',
                 'matching_defs': '名词解释',
                 'blanks': '理论填空',
-                'mc': '单项选择题',
+                'mc': '选择题',
                 'tf_a': '判断题 I',
                 'tf_b': '判断题 II'
             };
@@ -519,11 +546,14 @@
             const qData = DB[currentModule][realIndex];
             const total = DB[currentModule].length;
 
-            // Animate
+            // Reset UI states
             dom.card.classList.remove('fade-in');
             void dom.card.offsetWidth;
             dom.card.classList.add('fade-in');
             dom.feedbackArea.classList.add('hidden');
+            dom.multiActions.classList.add('hidden'); // Hide submit btn by default
+            dom.multiHint.classList.add('hidden'); // Hide multi hint by default
+            currentMultiSelection = []; // Reset selections
 
             // Header
             dom.progressText.textContent = `${currentQuestionIndex + 1} / ${total}`;
@@ -559,19 +589,28 @@
                     });
                 }, 50);
 
+            } else if (qData.type === 'multi') {
+                // --- MULTI SELECT LOGIC ---
+                dom.multiActions.classList.remove('hidden');
+                dom.multiHint.classList.remove('hidden');
+                
+                // For multi-select, keep original order as they are MC questions
+                qData.opts.forEach(opt => createMultiSelectBtn(opt));
+
             } else if (currentModule.startsWith('tf')) {
-                // True/False usually don't need shuffling, but let's keep them fixed for clarity
+                // True/False usually don't need shuffling
                 ['True', 'False'].forEach(opt => createBtn(opt, qData));
             } else if (currentModule === 'mc') {
-                // MC - Keep original order (A, B, C, D) per user request
+                // Standard MC - Keep original order
                 qData.opts.forEach(opt => createBtn(opt, qData));
             } else {
-                // Matching - SHUFFLE OPTIONS HERE
+                // Matching - Shuffle
                 const shuffledOpts = shuffleArray([...qData.opts]);
                 shuffledOpts.forEach(opt => createBtn(opt, qData));
             }
         }
 
+        // --- Standard Single Choice Button ---
         function createBtn(text, qData) {
             const btn = document.createElement('button');
             btn.className = 'option-btn w-full text-left p-5 rounded-xl border-2 border-purple-50 bg-white hover:border-purple-300 hover:bg-purple-50 text-gray-700 font-medium text-base md:text-lg shadow-sm mb-3';
@@ -580,6 +619,31 @@
             dom.optionsContainer.appendChild(btn);
         }
 
+        // --- New Multi-Select Button ---
+        function createMultiSelectBtn(text) {
+            const btn = document.createElement('button');
+            // Base style similar to standard but distinct interaction
+            btn.className = 'option-btn w-full text-left p-5 rounded-xl border-2 border-purple-50 bg-white hover:border-purple-300 hover:bg-purple-50 text-gray-700 font-medium text-base md:text-lg shadow-sm mb-3 flex justify-between items-center group';
+            
+            // Add checkbox visual
+            btn.innerHTML = `<span>${text}</span> <i class="far fa-square text-purple-300 text-xl group-hover:text-purple-500 transition"></i>`;
+            
+            btn.onclick = () => {
+                // Toggle selection state
+                if (currentMultiSelection.includes(text)) {
+                    currentMultiSelection = currentMultiSelection.filter(t => t !== text);
+                    btn.classList.remove('option-selected');
+                    btn.querySelector('i').className = 'far fa-square text-purple-300 text-xl group-hover:text-purple-500 transition';
+                } else {
+                    currentMultiSelection.push(text);
+                    btn.classList.add('option-selected');
+                    btn.querySelector('i').className = 'fas fa-check-square text-purple-600 text-xl transition';
+                }
+            };
+            dom.optionsContainer.appendChild(btn);
+        }
+
+        // --- Check Single Answer ---
         function check(selected, btn, qData) {
             if(isProcessing) return;
             
@@ -594,7 +658,6 @@
                 
                 showFeedback(true, qData.exp || "Correct!");
                 
-                // AUTO JUMP LOGIC
                 isProcessing = true;
                 setTimeout(() => {
                     nextQuestion();
@@ -615,6 +678,66 @@
             }
         }
 
+        // --- Check Multi Answer ---
+        function submitMultiAnswer() {
+            if(isProcessing) return;
+            
+            const realIndex = questionOrder[currentQuestionIndex];
+            const qData = DB[currentModule][realIndex];
+            const correctArr = qData.ans; // Is array for multi
+            
+            // Logic: Sort both arrays and compare stringified versions
+            const userSorted = [...currentMultiSelection].sort();
+            const correctSorted = [...correctArr].sort();
+            const isCorrect = JSON.stringify(userSorted) === JSON.stringify(correctSorted);
+
+            // Disable all buttons
+            const allBtns = dom.optionsContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+            dom.multiActions.classList.add('hidden'); // Hide submit button
+
+            if (isCorrect) {
+                // Highlight all selected green
+                allBtns.forEach(b => {
+                    const text = b.querySelector('span').textContent;
+                    if (currentMultiSelection.includes(text)) {
+                        b.className = 'w-full text-left p-5 rounded-xl border-2 border-green-500 bg-green-50 text-green-900 font-bold shadow-md flex justify-between items-center';
+                        b.querySelector('i').className = 'fas fa-check-circle text-green-600 text-xl';
+                    }
+                });
+                showFeedback(true, qData.exp || "Correct! All options matched.");
+                
+                isProcessing = true;
+                setTimeout(() => {
+                    nextQuestion();
+                    isProcessing = false;
+                }, 1500); // Slightly longer delay for multi to verify visually
+            } else {
+                // Highlight user wrong choices red, correct missed choices green
+                allBtns.forEach(b => {
+                    const text = b.querySelector('span').textContent;
+                    const isSelected = currentMultiSelection.includes(text);
+                    const isActuallyCorrect = correctArr.includes(text);
+
+                    if (isSelected && !isActuallyCorrect) {
+                        // User selected wrong one -> RED
+                        b.className = 'w-full text-left p-5 rounded-xl border-2 border-red-500 bg-red-50 text-red-900 font-medium shake shadow-md flex justify-between items-center';
+                        b.querySelector('i').className = 'fas fa-times-circle text-red-600 text-xl';
+                    } else if (!isSelected && isActuallyCorrect) {
+                        // User missed correct one -> Green Outline
+                        b.className = 'w-full text-left p-5 rounded-xl border-2 border-green-500 bg-white text-green-900 font-bold opacity-80 flex justify-between items-center';
+                        b.querySelector('i').className = 'fas fa-check text-green-600 text-xl';
+                    } else if (isSelected && isActuallyCorrect) {
+                        // User selected correct one -> Green
+                        b.className = 'w-full text-left p-5 rounded-xl border-2 border-green-500 bg-green-50 text-green-900 font-bold shadow-md flex justify-between items-center';
+                        b.querySelector('i').className = 'fas fa-check-circle text-green-600 text-xl';
+                    }
+                });
+                showFeedback(false, qData.exp ? `解析: ${qData.exp}` : `Correct Answers: ${correctArr.join(', ')}`);
+            }
+        }
+
+        // --- Blank Logic (Unchanged) ---
         function submitBlank() {
             if(isProcessing) return; 
             const realIndex = questionOrder[currentQuestionIndex];
@@ -634,10 +757,7 @@
                     isProcessing = false;
                 }, 1000);
             } else {
-                // WRONG ANSWER LOGIC
                 input.className = 'flex-1 p-4 border-2 border-red-500 bg-red-50 rounded-xl text-red-900 shake font-medium';
-                
-                // Force reveal feedback immediately
                 dom.feedbackArea.classList.remove('hidden');
                 dom.feedbackArea.className = 'mt-8 rounded-xl p-5 border-l-4 shadow-sm bg-red-50 border-red-500 flex-shrink-0';
                 
@@ -649,7 +769,6 @@
                 title.className = 'text-lg font-bold text-red-700';
                 
                 const msg = document.getElementById('feedback-msg');
-                // SHOW CORRECT ANSWER AS REQUESTED
                 msg.innerHTML = `
                     <div class="mb-2"><strong>正确答案:</strong> <span class="text-green-700 font-bold font-mono text-lg">${qData.ans}</span></div>
                     <div><strong>解析:</strong> ${qData.exp || '暂无解析'}</div>
