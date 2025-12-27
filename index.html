@@ -562,8 +562,11 @@
             } else if (currentModule.startsWith('tf')) {
                 // True/False usually don't need shuffling, but let's keep them fixed for clarity
                 ['True', 'False'].forEach(opt => createBtn(opt, qData));
+            } else if (currentModule === 'mc') {
+                // MC - Keep original order (A, B, C, D) per user request
+                qData.opts.forEach(opt => createBtn(opt, qData));
             } else {
-                // MC & Matching - SHUFFLE OPTIONS HERE
+                // Matching - SHUFFLE OPTIONS HERE
                 const shuffledOpts = shuffleArray([...qData.opts]);
                 shuffledOpts.forEach(opt => createBtn(opt, qData));
             }
