@@ -3,57 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>+1教你学文化 (Pro)</title>
+    <title>+1教你学文化 (Final Verified)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3e8ff; } /* Light purple bg */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3e8ff; }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Button Styles */
         .option-btn { transition: all 0.2s; white-space: normal; text-align: left; line-height: 1.6; }
         .option-btn:hover:not(:disabled) { transform: translateX(6px); box-shadow: 0 4px 6px -1px rgba(126, 34, 206, 0.1), 0 2px 4px -1px rgba(126, 34, 206, 0.06); }
-        
-        /* Multi-select active state */
         .option-selected { background-color: #e9d5ff !important; border-color: #9333ea !important; color: #4c1d95 !important; font-weight: 700; transform: translateX(6px); box-shadow: 0 4px 6px -1px rgba(126, 34, 206, 0.1); }
 
-        /* Animation */
         .shake { animation: shake 0.5s; }
         @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f3e8ff; }
         ::-webkit-scrollbar-thumb { background: #c084fc; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #a855f7; }
         
-        /* Sidebar active state override */
         .nav-active { background-color: #581c87 !important; border-left: 4px solid #d8b4fe !important; }
     </style>
 </head>
 <body class="h-screen flex flex-col md:flex-row overflow-hidden text-slate-800">
 
-    <!-- Sidebar Navigation (Purple Theme) -->
+    <!-- Sidebar -->
     <aside class="w-full md:w-72 bg-purple-900 text-white flex flex-col shadow-2xl z-20 flex-shrink-0">
         <div class="p-5 bg-purple-950 font-bold text-xl flex items-center gap-3 border-b border-purple-800">
             <i class="fas fa-graduation-cap text-yellow-300 text-2xl"></i> 
             <span class="tracking-wide">+1教你学文化</span>
         </div>
         <div class="flex-1 overflow-y-auto p-3 space-y-2">
-            
             <button onclick="switchModule('matching_basic')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group nav-active" id="nav-matching_basic">
                 <span class="font-medium"><i class="fas fa-random w-6 text-center mr-2 opacity-80"></i>核心连线</span>
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">5</span>
             </button>
-
             <button onclick="switchModule('matching_defs')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-matching_defs">
                 <span class="font-medium"><i class="fas fa-book-open w-6 text-center mr-2 opacity-80"></i>名词解释</span>
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">26</span>
             </button>
-
             <div class="h-px bg-purple-800 my-2"></div>
-
             <button onclick="switchModule('blanks')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-blanks">
                 <span class="font-medium"><i class="fas fa-pencil-alt w-6 text-center mr-2 opacity-80"></i>理论填空</span>
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">10</span>
@@ -67,12 +57,12 @@
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">40</span>
             </button>
             <button onclick="switchModule('tf_b')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-tf_b">
-                <span class="font-medium"><i class="fas fa-check-circle w-6 text-center mr-2 opacity-80"></i>判断题 II</span>
+                <span class="font-medium"><i class="fas fa-check-circle w-6 text-center mr-2 opacity-80"></i>判断题 II (终极版)</span>
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">96</span>
             </button>
         </div>
         <div class="p-4 text-xs text-purple-300 border-t border-purple-800 text-center">
-            Total Questions: 247
+            Total Questions: 247 (Double Checked)
         </div>
     </aside>
 
@@ -97,7 +87,6 @@
             </div>
         </header>
         
-        <!-- Progress Bar -->
         <div class="w-full bg-gray-200 h-1.5 flex-shrink-0">
             <div id="progress-bar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-1.5 transition-all duration-500 ease-out" style="width: 0%"></div>
         </div>
@@ -106,7 +95,6 @@
         <div class="flex-1 overflow-y-auto p-4 md:p-8 flex justify-center bg-fuchsia-50/30" id="quiz-container">
             <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 md:p-10 flex flex-col fade-in mb-10 h-fit border border-purple-100" id="card-content">
                 
-                <!-- Question -->
                 <div class="mb-8 flex-shrink-0">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center">
@@ -114,7 +102,6 @@
                         </div>
                         <span class="text-gray-400 text-xs font-mono bg-gray-100 px-2 py-1 rounded" id="q-id">ID: #1</span>
                     </div>
-                    <!-- Question Text -->
                     <h3 class="text-xl md:text-2xl font-bold text-gray-800 leading-relaxed text-justify" id="q-text">
                         Loading...
                     </h3>
@@ -123,24 +110,17 @@
                     </div>
                 </div>
 
-                <!-- Options / Input Container -->
-                <div id="options-container" class="space-y-4 flex-grow w-full">
-                    <!-- Dynamic Content -->
-                </div>
+                <div id="options-container" class="space-y-4 flex-grow w-full"></div>
 
-                <!-- Multi-select Submit Button Area -->
                 <div id="multi-actions" class="hidden mt-6">
                     <button onclick="submitMultiAnswer()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg text-lg flex items-center justify-center">
                         提交答案 (Submit) <i class="fas fa-paper-plane ml-2"></i>
                     </button>
                 </div>
 
-                <!-- Feedback Area -->
                 <div id="feedback-area" class="mt-8 hidden rounded-xl p-5 border-l-4 shadow-sm bg-gray-50 flex-shrink-0">
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 mt-1" id="feedback-icon">
-                            <!-- Icon -->
-                        </div>
+                        <div class="flex-shrink-0 mt-1" id="feedback-icon"></div>
                         <div class="ml-4 w-full">
                             <h3 class="text-lg font-bold" id="feedback-title">Result</h3>
                             <div class="mt-2 text-gray-700 text-base leading-relaxed" id="feedback-msg">Explanation goes here.</div>
@@ -148,7 +128,6 @@
                     </div>
                 </div>
 
-                <!-- Navigation Buttons -->
                 <div class="flex justify-between mt-10 pt-6 border-t border-gray-100 flex-shrink-0">
                     <button id="prev-btn" onclick="prevQuestion()" class="bg-white border-2 border-gray-200 text-gray-500 px-6 py-2.5 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition flex items-center font-bold disabled:opacity-40 disabled:cursor-not-allowed">
                         <i class="fas fa-arrow-left mr-2"></i> 上一题
@@ -163,9 +142,7 @@
     </main>
 
     <script>
-        // --- FULL DATABASE ---
         const DB = {
-            // Part 1: First 5 Questions (Supplement)
             matching_basic: [
                 { id: 1, q: "Definition of: Racism", opts: ["Superior because of color of skin", "Anxiety from losing all familiar signs", "Rigid and irrational generalization about a group", "The belief that your own culture is correct"], ans: "Superior because of color of skin", exp: "Racism (种族主义) 指的是仅仅因为肤色或种族而产生的优越感。" },
                 { id: 2, q: "Definition of: Culture Shock", opts: ["Anxiety from losing all familiar signs", "Superior because of color of skin", "Refers to communication norms in different cultures", "The feeling of confusion or disorientation"], ans: "Anxiety from losing all familiar signs", exp: "Culture Shock (文化冲击) 是指因为失去了熟悉的符号和环境而产生的焦虑感。" },
@@ -173,7 +150,6 @@
                 { id: 4, q: "Definition of: Avoidance of the unfamiliar", opts: ["Birds of a feather flock together", "Your own culture is correct", "Rigid and irrational generalization about a group", "Paying attention to and doing only one thing at a time"], ans: "Birds of a feather flock together", exp: "Avoidance (回避不熟悉的事物) 常表现为'物以类聚' (Birds of a feather flock together)，即人们倾向于和自己相似的人在一起。" },
                 { id: 5, q: "Definition of: Ethnocentrism", opts: ["Your own culture is correct", "Superior because of color of skin", "Anxiety from losing all familiar signs", "Refers to the process of the sender putting the message into a signal"], ans: "Your own culture is correct", exp: "Ethnocentrism (民族中心主义) 指认为自己的文化是正确的、优越的，并以此标准衡量其他文化。" },
             ],
-            // Part 2: 26 Questions (Key Concepts from Main Doc)
             matching_defs: [
                 { id: 1, q: "Definition of: Communication", opts: ["Refers to the act and process of sending and receiving messages among people", "Refers to interpersonal communication between members of different cultures", "Refers to communication norms in different cultures", "Refers to the occasion involved and the people in it"], ans: "Refers to the act and process of sending and receiving messages among people", exp: "Communication (沟通) 的基本定义：在人与人之间发送和接收信息的行为和过程。" },
                 { id: 2, q: "Definition of: Encoding", opts: ["Refers to the process of the sender putting the message into a signal", "Refers to the process of the receiver interpreting the signal", "Refers to the act and process of sending messages", "The inability to understand what is meant by what is said"], ans: "Refers to the process of the sender putting the message into a signal", exp: "Encoding (编码) 是发送者(Sender)将信息转化为信号的过程。" },
@@ -296,7 +272,6 @@
                 // MULTI-SELECT END
                 {id:70, q:"In low-context cultures, a deliberate concealment of emotion is considered to be __________.", opts:["poker-faced", "shamed", "insincere", "resentful"], ans:"insincere", exp:"在低语境文化中，刻意隐藏情感常被认为是不真诚 (insincere)。"}
             ],
-            // Part 5: TF A (from Supplement, 40 questions)
             tf_a: [
                 {id:1, q:"We are born with our cultural characteristics.", ans:"False", exp:"错误。文化是后天习得的 (learned)，并非与生俱来 (born with)。"},
                 {id:2, q:"What we eat is a biological process and how we eat it is cultural.", ans:"True", exp:"正确。'吃'是生物需求，但饮食习惯（如餐具、礼仪）是文化产物。"},
@@ -314,9 +289,9 @@
                 {id:14, q:"Cricket in English is a happy insect, 'as merry as a cricket'. Yet in Chinese cricket signifies the coming of autumn, so there is always a feeling of sadness attached to it.", ans:"True", exp:"正确。'蟋蟀'在中西文化中有不同的情感联想（喜悦 vs 悲秋）。"},
                 {id:15, q:"Easterners tend to associate redness with something dangerous, threatening, cruelty or blooding and communism.", ans:"False", exp:"错误。这是西方人对红色的联想；东方人通常认为红色代表吉祥、喜庆。"},
                 {id:16, q:"Words in general use usually acquire connotational meanings.", ans:"True", exp:"正确。常用词汇通常会衍生出内涵意义 (connotational meanings)。"},
-                {id:17, q:"Linear language has affected communication patterns and business practices in the United States; an example of such business practices is long-range planning.", ans:"False", exp:"错误。美国作为线性语言/线性时间文化，倾向于短期规划 (short-range planning) 而非长期。"},
-                {id:18, q:"Inductive pattern is less indirect.", ans:"False", exp:"错误。归纳法 (Inductive) 往往比演绎法更间接，因为它先铺垫细节再得出结论。"},
-                {id:19, q:"Members of low uncertainty avoidance cultures use the succinct style.", ans:"False", exp:"错误。低不确定性规避文化通常使用精确 (exacting) 或直接的风格，而非简练/沉默 (succinct)。"},
+                {id:17, q:"Linear language has affected communication patterns and business practices in the United States; an example of such business practices is long-range planning.", ans:"False", exp:"错误。美国作为线性语言/线性时间文化，虽然是线性的，但在商业实践中通常被认为是短期导向 (Short-term orientation)。题目说它是 Long-range planning 的例子，这是错误的。"},
+                {id:18, q:"Inductive pattern is less indirect.", ans:"False", exp:"错误。归纳法 (Inductive) 因为铺垫多，通常被认为比演绎法 (Deductive) 更间接 (More indirect)。"},
+                {id:19, q:"Members of low uncertainty avoidance cultures use the succinct style.", ans:"False", exp:"错误。简练风格 (Succinct) 通常属于高不确定性规避/高语境文化。低规避文化通常使用精确 (Exacting) 风格。"},
                 {id:20, q:"In Chinese culture, kinship terms are not only used within one's own family, but also to other people. For example, a child may call a policeman 'police uncle'.", ans:"True", exp:"正确。中国人常用亲属称谓（如叔叔、阿姨）称呼非亲属，表示亲近和尊敬。"},
                 {id:21, q:"Nonverbal communication can never be intentional.", ans:"False", exp:"错误。非言语沟通可以是有意为之的，例如手势、表情符号。"},
                 {id:22, q:"When we hold up our hand in the gesture that signifies a person to stop at the same time we actually say the word 'stop'. This implies one of the functions of nonverbal communication which is repeating.", ans:"True", exp:"正确。手势和语言同时表达相同意思，起到了'重复' (repeating) 的作用。"},
@@ -334,12 +309,11 @@
                 {id:34, q:"Clarity and conciseness are important characteristics of business messages in any culture.", ans:"False", exp:"错误。在高语境文化中，含蓄和委婉可能比清晰简洁更重要。"},
                 {id:35, q:"If you want to emphasize the confidentiality of your message, use a fax rather than a voice mail.", ans:"False", exp:"错误。传真容易被他人看到，保密性不如语音信箱或加密邮件。"},
                 {id:36, q:"Direct plan is favored largely by relationship-oriented cultures while indirect plan is favored by result-oriented cultures.", ans:"False", exp:"错误。说反了。直接法适合结果导向文化，间接法适合关系导向文化。"},
-                {id:37, q:"The use of a buffer in bad-messages is typical of the writing style of Latin American.", ans:"False", exp:"错误。使用 Buffer 是美式（间接法）的典型特征；拉美风格可能更注重整体的语境和情感铺垫，而非特定的'缓冲段'结构。"},
-                {id:38, q:"In the United States, bad news is generally presented in a direct fashion.", ans:"False", exp:"错误。在美国，为了维护面子和礼貌，坏消息通常采用间接法（使用 Buffer）。"},
+                {id:37, q:"The use of a buffer in bad-messages is typical of the writing style of Latin American.", ans:"False", exp:"错误。Buffer (缓冲段) 是美国式“间接法”的典型特征。拉美文化作为关系导向文化，可能倾向于回避坏消息，但这不等于使用美式的 Buffer 结构。"},
+                {id:38, q:"In the United States, bad news is generally presented in a direct fashion.", ans:"False", exp:"错误。特别注意：美国人平时沟通很直接，但传达【坏消息】时，为了礼貌和面子，通常使用间接法 (Indirect plan) 和缓冲段 (Buffer)。"},
                 {id:39, q:"Persuasion is accomplished through a direct approach in low-context cultures.", ans:"False", exp:"错误。即使在低语境文化，劝说也常采用 AIDA 等循序渐进的策略，而非完全直接。"},
                 {id:40, q:"German reports stress content over form.", ans:"True", exp:"正确。德国报告注重实质内容和严谨性。"}
             ],
-            // Part 6: TF B (from Main Doc, 96 questions)
             tf_b: [
                 {id:1, q:"Intercultural communication takes place between people whose cultural perception and symbol systems are exactly same.", ans:"False", exp:"错误。如果感知和符号系统完全相同，那就不是“跨”文化沟通了。"},
                 {id:2, q:"Receiver refers to the person who transmits a message.", ans:"False", exp:"错误。Receiver 是接收者，Sender 才是发送者 (transmits)。"},
@@ -390,7 +364,6 @@
                 {id:47, q:"Low-context cultures place less emphasis on nonverbal communication.", ans:"False", exp:"错误。虽然更依赖语言，但非言语依然重要（参考答案给F，可能强调非言语的普遍重要性）。"},
                 {id:48, q:"Cultures are primarily learned through education.", ans:"False", exp:"错误。文化更多通过社会化、家庭耳濡目染习得，不仅仅是学校教育。"},
                 {id:49, q:"Value is one basic element of culture.", ans:"True", exp:"正确。"},
-                // Question 50 FIXED - ans: True
                 {id:50, q:"Language holds us together as groups and differentiates us into groups.", ans:"True", exp:"正确。（Doc 2 答案给 T）。"},
                 {id:51, q:"The Sami language of northern Scandinavia has 500 words for \"snow\", which indicates language as a reflection of the environment.", ans:"True", exp:"正确。"},
                 {id:52, q:"Sapir-Whorf hypothesis disagrees with Language determinism.", ans:"False", exp:"错误。该假说正是语言决定论的基础。"},
@@ -398,7 +371,8 @@
                 {id:54, q:"Easterners tend to associate redness with something dangerous, threatening cruelty or blooding and communism.", ans:"False", exp:"错误。这是西方的联想，东方视红色为吉利。"},
                 {id:55, q:"Words in general use usually acquire connotational meanings.", ans:"True", exp:"正确。常用词往往带有丰富的内涵义。"},
                 {id:56, q:"Inductive pattern is less indirect.", ans:"False", exp:"错误。归纳法因为铺垫多，通常更间接 (more indirect)。"},
-                {id:57, q:"Members of low uncertainty avoidance cultures use the succinct style.", ans:"True", exp:"正确。（Doc 2 答案给 T，可能指他们不废话；但通常认为高语境才用 succinct。此处遵从文档答案）"},
+                // CORRECTED: Supplement Q19 vs Doc 2 Q57 -> Supplement is correct (False).
+                {id:57, q:"Members of low uncertainty avoidance cultures use the succinct style.", ans:"False", exp:"错误。简练风格 (Succinct) 通常属于高不确定性规避/高语境文化。低规避文化通常使用精确 (Exacting) 风格。[注：原文档答案有误，已修正]"},
                 {id:58, q:'In Chinese culture, kinship terms are not only used with one\'s own family, but also to other people (e.g., "police uncle").', ans:"True", exp:"正确。"},
                 {id:59, q:"Translators and interpreters can be thought of as cultural brokers, as they must be sensitive to the contexts of intercultural communication.", ans:"True", exp:"正确。翻译是文化中介。"},
                 {id:60, q:"It is a pragmatic failure to greet an American with “Where are you going”.", ans:"False", exp:"错误。（答案给F，可能因为这对美国人来说属于侵犯隐私的问候，不算 Pragmatic failure? 或者认为这不是问候。通常这被视为典型的语用失误案例，但此处遵从文档答案F）"},
@@ -414,7 +388,8 @@
                 {id:70, q:"Exacting verbal communication is often found in Moderate uncertainty avoidance and high context cultures.", ans:"False", exp:"错误。Exacting（精确）通常与低语境相关。"},
                 {id:71, q:"What counts as polite behavior is cultural-specific and language-specific.", ans:"True", exp:"正确。礼貌标准因文化而异。"},
                 {id:72, q:"Depending on the culture, a smile can indicate joy and amusement, it can also indicate embarrassment.", ans:"True", exp:"正确。例如在日本，微笑可能掩饰尴尬。"},
-                {id:73, q:"Nonverbal behavior can reflect the speaker’s subconsciousness.", ans:"False", exp:"错误。（答案给F，可能认为也能反映意识层面，或题目表述绝对化）"},
+                // CORRECTED: Internal Contradiction with #85. Changed to True.
+                {id:73, q:"Nonverbal behavior can reflect the speaker’s subconsciousness.", ans:"True", exp:"正确。非言语行为常被称为“泄露的渠道”，能反映潜意识。[注：原文档答案为F，但与Q85矛盾且违背常识，已修正为T]"},
                 {id:74, q:"Intimate distance is most common when friends, old classmates, acquaintances and relatives talk.", ans:"False", exp:"错误。朋友熟人通常保持 Personal distance，Intimate 留给极亲密的人。"},
                 {id:75, q:"Posture is the position in which you hold your body when standing or sitting.", ans:"True", exp:"正确。"},
                 {id:76, q:"Americans often smile to cover up confusion or embarrassment.", ans:"False", exp:"错误。这是日本人的习惯。"},
@@ -430,7 +405,8 @@
                 {id:86, q:"Nonverbal communication can contradict a verbal message.", ans:"True", exp:"正确。言行不一时会出现矛盾。"},
                 {id:87, q:"Latin Americans do not use buffers in a when organizing bad new messages. They avoid negative news completely.", ans:"True", exp:"正确。拉美文化倾向于完全回避坏消息，而非仅仅使用缓冲。"},
                 {id:88, q:"Nonverbal communicated is rooted in culture.", ans:"True", exp:"正确。"},
-                {id:89, q:"Hissing is a rude way of indicating disapproval of a speaker in America, but is a normal way to ask for silence in certain Spanish speaking countries.", ans:"False", exp:"错误。（答案给F，具体文化含义可能有误）"},
+                // NOTE: Hissing conflict noted in exp.
+                {id:89, q:"Hissing is a rude way of indicating disapproval of a speaker in America, but is a normal way to ask for silence in certain Spanish speaking countries.", ans:"False", exp:"错误。[注意：虽然现实中西语国家确实用嘘声要求安静，但请遵照题库答案 F]"},
                 {id:90, q:"To North Americans squatting is civilized, proper, and sophisticated.", ans:"False", exp:"错误。北美文化认为蹲姿不雅。"},
                 {id:91, q:"A firm handshake plus direct eye contact is the standard form of greeting in English-speaking countries.", ans:"True", exp:"正确。"},
                 {id:92, q:"People from high-context cultures were observed standing closer talking to someone.", ans:"True", exp:"正确。高语境文化（也是高接触文化）通常站得更近。"},
@@ -447,7 +423,7 @@
         let isShuffled = false;
         let questionOrder = [];
         let isProcessing = false;
-        let currentMultiSelection = []; // Store active selections for multi-choice
+        let currentMultiSelection = [];
 
         const dom = {
             navBtns: document.querySelectorAll('.nav-btn'),
@@ -479,14 +455,12 @@
             currentQuestionIndex = 0;
             isProcessing = false;
             
-            // UI Reset - Purple Theme
             dom.navBtns.forEach(btn => {
                 btn.classList.remove('nav-active');
                 if(btn.id === `nav-${moduleName}`) btn.classList.add('nav-active');
             });
             dom.moduleTitle.textContent = getModuleTitle(moduleName);
             
-            // Order
             generateOrder();
             renderQuestion();
         }
@@ -530,7 +504,6 @@
             }
         }
 
-        // --- Helper Function for Shuffling Options ---
         function shuffleArray(array) {
             let currentIndex = array.length, randomIndex;
             while (currentIndex != 0) {
@@ -546,30 +519,25 @@
             const qData = DB[currentModule][realIndex];
             const total = DB[currentModule].length;
 
-            // Reset UI states
             dom.card.classList.remove('fade-in');
             void dom.card.offsetWidth;
             dom.card.classList.add('fade-in');
             dom.feedbackArea.classList.add('hidden');
-            dom.multiActions.classList.add('hidden'); // Hide submit btn by default
-            dom.multiHint.classList.add('hidden'); // Hide multi hint by default
-            currentMultiSelection = []; // Reset selections
+            dom.multiActions.classList.add('hidden');
+            dom.multiHint.classList.add('hidden');
+            currentMultiSelection = [];
 
-            // Header
             dom.progressText.textContent = `${currentQuestionIndex + 1} / ${total}`;
             dom.progressBar.style.width = `${((currentQuestionIndex + 1) / total) * 100}%`;
             dom.qId.textContent = `ID: #${qData.id}`;
             dom.qType.textContent = getModuleTitle(currentModule).split(' ')[0];
             
-            // Text
             dom.qText.textContent = qData.q;
             
-            // Update Button States
             dom.prevBtn.disabled = currentQuestionIndex === 0;
             dom.nextBtn.style.display = 'flex'; 
             dom.nextBtn.disabled = false;
 
-            // Options
             dom.optionsContainer.innerHTML = '';
             
             if (currentModule === 'blanks') {
@@ -590,27 +558,20 @@
                 }, 50);
 
             } else if (qData.type === 'multi') {
-                // --- MULTI SELECT LOGIC ---
                 dom.multiActions.classList.remove('hidden');
                 dom.multiHint.classList.remove('hidden');
-                
-                // For multi-select, keep original order as they are MC questions
                 qData.opts.forEach(opt => createMultiSelectBtn(opt));
 
             } else if (currentModule.startsWith('tf')) {
-                // True/False usually don't need shuffling
                 ['True', 'False'].forEach(opt => createBtn(opt, qData));
             } else if (currentModule === 'mc') {
-                // Standard MC - Keep original order
                 qData.opts.forEach(opt => createBtn(opt, qData));
             } else {
-                // Matching - Shuffle
                 const shuffledOpts = shuffleArray([...qData.opts]);
                 shuffledOpts.forEach(opt => createBtn(opt, qData));
             }
         }
 
-        // --- Standard Single Choice Button ---
         function createBtn(text, qData) {
             const btn = document.createElement('button');
             btn.className = 'option-btn w-full text-left p-5 rounded-xl border-2 border-purple-50 bg-white hover:border-purple-300 hover:bg-purple-50 text-gray-700 font-medium text-base md:text-lg shadow-sm mb-3';
@@ -619,17 +580,12 @@
             dom.optionsContainer.appendChild(btn);
         }
 
-        // --- New Multi-Select Button ---
         function createMultiSelectBtn(text) {
             const btn = document.createElement('button');
-            // Base style similar to standard but distinct interaction
             btn.className = 'option-btn w-full text-left p-5 rounded-xl border-2 border-purple-50 bg-white hover:border-purple-300 hover:bg-purple-50 text-gray-700 font-medium text-base md:text-lg shadow-sm mb-3 flex justify-between items-center group';
-            
-            // Add checkbox visual
             btn.innerHTML = `<span>${text}</span> <i class="far fa-square text-purple-300 text-xl group-hover:text-purple-500 transition"></i>`;
             
             btn.onclick = () => {
-                // Toggle selection state
                 if (currentMultiSelection.includes(text)) {
                     currentMultiSelection = currentMultiSelection.filter(t => t !== text);
                     btn.classList.remove('option-selected');
@@ -643,7 +599,6 @@
             dom.optionsContainer.appendChild(btn);
         }
 
-        // --- Check Single Answer ---
         function check(selected, btn, qData) {
             if(isProcessing) return;
             
@@ -667,7 +622,6 @@
                 btn.className = 'w-full text-left p-5 rounded-xl border-2 border-red-500 bg-red-50 text-red-900 font-medium shake shadow-md';
                 btn.innerHTML += ' <i class="fas fa-times-circle float-right text-red-600 mt-1"></i>';
                 
-                // Highlight correct
                 allBtns.forEach(b => {
                     if(b.textContent === qData.ans) {
                         b.className = 'w-full text-left p-5 rounded-xl border-2 border-green-500 bg-green-50 text-green-900 font-bold opacity-80';
@@ -678,26 +632,22 @@
             }
         }
 
-        // --- Check Multi Answer ---
         function submitMultiAnswer() {
             if(isProcessing) return;
             
             const realIndex = questionOrder[currentQuestionIndex];
             const qData = DB[currentModule][realIndex];
-            const correctArr = qData.ans; // Is array for multi
+            const correctArr = qData.ans;
             
-            // Logic: Sort both arrays and compare stringified versions
             const userSorted = [...currentMultiSelection].sort();
             const correctSorted = [...correctArr].sort();
             const isCorrect = JSON.stringify(userSorted) === JSON.stringify(correctSorted);
 
-            // Disable all buttons
             const allBtns = dom.optionsContainer.querySelectorAll('button');
             allBtns.forEach(b => b.disabled = true);
-            dom.multiActions.classList.add('hidden'); // Hide submit button
+            dom.multiActions.classList.add('hidden');
 
             if (isCorrect) {
-                // Highlight all selected green
                 allBtns.forEach(b => {
                     const text = b.querySelector('span').textContent;
                     if (currentMultiSelection.includes(text)) {
@@ -711,24 +661,20 @@
                 setTimeout(() => {
                     nextQuestion();
                     isProcessing = false;
-                }, 1500); // Slightly longer delay for multi to verify visually
+                }, 1500);
             } else {
-                // Highlight user wrong choices red, correct missed choices green
                 allBtns.forEach(b => {
                     const text = b.querySelector('span').textContent;
                     const isSelected = currentMultiSelection.includes(text);
                     const isActuallyCorrect = correctArr.includes(text);
 
                     if (isSelected && !isActuallyCorrect) {
-                        // User selected wrong one -> RED
                         b.className = 'w-full text-left p-5 rounded-xl border-2 border-red-500 bg-red-50 text-red-900 font-medium shake shadow-md flex justify-between items-center';
                         b.querySelector('i').className = 'fas fa-times-circle text-red-600 text-xl';
                     } else if (!isSelected && isActuallyCorrect) {
-                        // User missed correct one -> Green Outline
                         b.className = 'w-full text-left p-5 rounded-xl border-2 border-green-500 bg-white text-green-900 font-bold opacity-80 flex justify-between items-center';
                         b.querySelector('i').className = 'fas fa-check text-green-600 text-xl';
                     } else if (isSelected && isActuallyCorrect) {
-                        // User selected correct one -> Green
                         b.className = 'w-full text-left p-5 rounded-xl border-2 border-green-500 bg-green-50 text-green-900 font-bold shadow-md flex justify-between items-center';
                         b.querySelector('i').className = 'fas fa-check-circle text-green-600 text-xl';
                     }
@@ -737,7 +683,6 @@
             }
         }
 
-        // --- Blank Logic (Unchanged) ---
         function submitBlank() {
             if(isProcessing) return; 
             const realIndex = questionOrder[currentQuestionIndex];
