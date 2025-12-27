@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>+1教你学文化</title>
+    <title>+1教你学文化 (Pro)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -38,10 +38,19 @@
             <span class="tracking-wide">+1教你学文化</span>
         </div>
         <div class="flex-1 overflow-y-auto p-3 space-y-2">
-            <button onclick="switchModule('matching')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group nav-active" id="nav-matching">
-                <span class="font-medium"><i class="fas fa-book w-6 text-center mr-2 opacity-80"></i>核心连线 (全)</span>
-                <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">31</span>
+            
+            <button onclick="switchModule('matching_basic')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group nav-active" id="nav-matching_basic">
+                <span class="font-medium"><i class="fas fa-random w-6 text-center mr-2 opacity-80"></i>核心连线</span>
+                <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">5</span>
             </button>
+
+            <button onclick="switchModule('matching_defs')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-matching_defs">
+                <span class="font-medium"><i class="fas fa-book-open w-6 text-center mr-2 opacity-80"></i>名词解释</span>
+                <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">26</span>
+            </button>
+
+            <div class="h-px bg-purple-800 my-2"></div>
+
             <button onclick="switchModule('blanks')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-blanks">
                 <span class="font-medium"><i class="fas fa-pencil-alt w-6 text-center mr-2 opacity-80"></i>理论填空</span>
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">10</span>
@@ -51,11 +60,11 @@
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">70</span>
             </button>
             <button onclick="switchModule('tf_a')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-tf_a">
-                <span class="font-medium"><i class="fas fa-check-square w-6 text-center mr-2 opacity-80"></i>判断题 (强化)</span>
+                <span class="font-medium"><i class="fas fa-check-square w-6 text-center mr-2 opacity-80"></i>判断题 I</span>
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">40</span>
             </button>
             <button onclick="switchModule('tf_b')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-tf_b">
-                <span class="font-medium"><i class="fas fa-check-circle w-6 text-center mr-2 opacity-80"></i>判断题 (综合)</span>
+                <span class="font-medium"><i class="fas fa-check-circle w-6 text-center mr-2 opacity-80"></i>判断题 II</span>
                 <span class="text-xs bg-purple-700 text-purple-100 px-2 py-1 rounded-full group-hover:bg-purple-600 transition">96</span>
             </button>
         </div>
@@ -69,13 +78,13 @@
         <!-- Top Bar -->
         <header class="bg-white shadow-sm p-4 flex justify-between items-center z-10 flex-shrink-0 border-b border-gray-100">
             <div>
-                <h2 id="module-title" class="text-2xl font-bold text-purple-900 tracking-tight">核心概念连线</h2>
-                <div class="text-sm text-gray-500 mt-1">题目进度: <span id="progress-text" class="font-mono font-bold text-purple-600 text-base">1 / 31</span></div>
+                <h2 id="module-title" class="text-2xl font-bold text-purple-900 tracking-tight">核心连线</h2>
+                <div class="text-sm text-gray-500 mt-1">题目进度: <span id="progress-text" class="font-mono font-bold text-purple-600 text-base">1 / 5</span></div>
             </div>
             <div class="flex items-center gap-4">
                 <label class="flex items-center cursor-pointer select-none bg-purple-50 px-4 py-2 rounded-full hover:bg-purple-100 transition border border-purple-100 group">
                     <input type="checkbox" id="shuffle-toggle" class="form-checkbox h-5 w-5 text-purple-600 rounded focus:ring-purple-500" onchange="toggleShuffle()">
-                    <span class="ml-2 text-purple-700 font-bold text-sm group-hover:text-purple-800"><i class="fas fa-random mr-1"></i> 随机乱序</span>
+                    <span class="ml-2 text-purple-700 font-bold text-sm group-hover:text-purple-800"><i class="fas fa-random mr-1"></i> 随机出题</span>
                 </label>
                 <!-- Jump to input -->
                 <div class="hidden md:flex items-center gap-2 bg-white p-1 rounded-lg border border-gray-200">
@@ -139,42 +148,46 @@
     </main>
 
     <script>
-        // --- FULL DATABASE (Verified Complete) ---
+        // --- FULL DATABASE ---
         const DB = {
-            matching: [
+            // Part 1: First 5 Questions (from Supplement)
+            matching_basic: [
                 { id: 1, q: "Definition of: Racism", opts: ["Superior because of color of skin", "Anxiety from losing all familiar signs", "Rigid and irrational generalization about a group", "The belief that your own culture is correct"], ans: "Superior because of color of skin", exp: "Racism (种族主义) 指的是仅仅因为肤色或种族而产生的优越感。" },
                 { id: 2, q: "Definition of: Culture Shock", opts: ["Anxiety from losing all familiar signs", "Superior because of color of skin", "Refers to communication norms in different cultures", "The feeling of confusion or disorientation"], ans: "Anxiety from losing all familiar signs", exp: "Culture Shock (文化冲击) 是指因为失去了熟悉的符号和环境而产生的焦虑感。" },
                 { id: 3, q: "Definition of: Prejudice", opts: ["Rigid and irrational generalization about a group", "Superior because of color of skin", "Birds of a feather flock together", "Refers to the act and process of sending messages"], ans: "Rigid and irrational generalization about a group", exp: "Prejudice (偏见) 是对某一特定群体持有的一种僵化且非理性的概括或反感。" },
                 { id: 4, q: "Definition of: Avoidance of the unfamiliar", opts: ["Birds of a feather flock together", "Your own culture is correct", "Rigid and irrational generalization about a group", "Paying attention to and doing only one thing at a time"], ans: "Birds of a feather flock together", exp: "Avoidance (回避不熟悉的事物) 常表现为'物以类聚' (Birds of a feather flock together)，即人们倾向于和自己相似的人在一起。" },
                 { id: 5, q: "Definition of: Ethnocentrism", opts: ["Your own culture is correct", "Superior because of color of skin", "Anxiety from losing all familiar signs", "Refers to the process of the sender putting the message into a signal"], ans: "Your own culture is correct", exp: "Ethnocentrism (民族中心主义) 指认为自己的文化是正确的、优越的，并以此标准衡量其他文化。" },
-                // Part I of Doc 2 Key Concepts (26 items)
-                { id: 6, q: "Definition of: Communication", opts: ["Refers to the act and process of sending and receiving messages among people", "Refers to interpersonal communication between members of different cultures", "Refers to communication norms in different cultures", "Refers to the occasion involved and the people in it"], ans: "Refers to the act and process of sending and receiving messages among people", exp: "Communication (沟通) 的基本定义：在人与人之间发送和接收信息的行为和过程。" },
-                { id: 7, q: "Definition of: Encoding", opts: ["Refers to the process of the sender putting the message into a signal", "Refers to the process of the receiver interpreting the signal", "Refers to the act and process of sending messages", "The inability to understand what is meant by what is said"], ans: "Refers to the process of the sender putting the message into a signal", exp: "Encoding (编码) 是发送者(Sender)将信息转化为信号的过程。" },
-                { id: 8, q: "Definition of: Decoding", opts: ["Refers to the process of the receiver interpreting the signal from the sender", "Refers to the process of the sender putting the message into a signal", "Refers to communication norms in different cultures", "Extended meaning or associated meaning"], ans: "Refers to the process of the receiver interpreting the signal from the sender", exp: "Decoding (解码) 是接收者(Receiver)解读来自发送者的信号的过程。" },
-                { id: 9, q: "Definition of: Social context", opts: ["Refers to the occasion involved and the people in it", "Refers to communication norms in different cultures", "Refers to the setting or situation within which communication takes place", "Refers to communication within and between businesses"], ans: "Refers to the occasion involved and the people in it", exp: "Social context (社会语境) 指的是沟通所涉及的场合(occasion)以及参与其中的人。" },
-                { id: 10, q: "Definition of: Cultural context", opts: ["Refers to communication norms in different cultures", "Refers to the occasion involved and the people in it", "Refers to interpersonal communication between members of different cultures", "Refers to communication without the use of words"], ans: "Refers to communication norms in different cultures", exp: "Cultural context (文化语境) 指的是不同文化中特定的沟通规范(norms)。" },
-                { id: 11, q: "Definition of: Intercultural Communication", opts: ["Refers to interpersonal communication between members of different cultures", "Refers to communication within and between businesses involving different cultures", "Refers to the act and process of sending messages", "Refers to communication norms in different cultures"], ans: "Refers to interpersonal communication between members of different cultures", exp: "Intercultural Communication (跨文化沟通) 特指不同文化成员之间的人际沟通。" },
-                { id: 12, q: "Definition of: Intercultural Business Communication", opts: ["Refers to communication within and between businesses that involve people from more than one culture", "Refers to interpersonal communication between members of different cultures", "Refers to the act and process of sending messages", "Values are at the core of culture"], ans: "Refers to communication within and between businesses that involve people from more than one culture", exp: "Intercultural Business Communication (跨文化商务沟通) 侧重于商业环境中涉及多种文化的沟通。" },
-                { id: 13, q: "Definition of: Stereotyping", opts: ["Refers to an overly simplified or generalized way of thinking about a person or a group", "Refers to the irrational dislike of a particular group", "Refers to the feeling of confusion or disorientation", "Belief that one is superior because of skin color"], ans: "Refers to an overly simplified or generalized way of thinking about a person or a group", exp: "Stereotyping (刻板印象) 是对某个人或群体的一种过度简化或概括的看法。" },
-                { id: 14, q: "Definition of: Prejudice", opts: ["Refers to the irrational dislike, suspicion or hatred of a particular group", "Refers to an overly simplified way of thinking", "Refers to the feeling of confusion or disorientation", "Your own culture is correct"], ans: "Refers to the irrational dislike, suspicion or hatred of a particular group", exp: "Prejudice (偏见) 强调的是一种非理性的厌恶、怀疑或仇恨。" },
-                { id: 15, q: "Definition of: Cultural shock", opts: ["Refers to the feeling of confusion or disorientation experienced in new situations", "Refers to an overly simplified way of thinking", "Refers to the irrational dislike of a group", "Refers to communication norms in different cultures"], ans: "Refers to the feeling of confusion or disorientation experienced in new situations", exp: "Cultural shock (文化冲击) 是面对陌生环境或人群时感到的困惑或迷失感。" },
-                { id: 16, q: "Definition of: Culture", opts: ["An abstract entity which involves usually manmade collective and shared artifacts, behavior patterns and values", "Refers to the act and process of sending messages", "Refers to communication norms in different cultures", "The idea of people taking care of themselves"], ans: "An abstract entity which involves usually manmade collective and shared artifacts, behavior patterns and values", exp: "Culture (文化) 是一个人造的、集体的、共享的产物（器物、行为、价值观），是人区别于动物的特征。" },
-                { id: 17, q: "Definition of: Sociocultural values", opts: ["System of criteria by which conduct is judged; preferability of one belief over another", "The idea of people taking care of themselves", "Refers to communication norms in different cultures", "Dictionary meaning or literal meaning"], ans: "System of criteria by which conduct is judged; preferability of one belief over another", exp: "Sociocultural values (社会文化价值观) 是判断行为的标准，即认为某种信念优于另一种信念。" },
-                { id: 18, q: "Definition of: Individualism", opts: ["The idea of people taking care of themselves and their immediate families", "A cultural dimension that measures a society’s focus on the future", "Paying attention to and doing only one thing at a time", "Refers to an overly simplified way of thinking"], ans: "The idea of people taking care of themselves and their immediate families", exp: "Individualism (个人主义) 强调个人照顾好自己和直系亲属。" },
-                { id: 19, q: "Definition of: Long-term orientation", opts: ["A cultural dimension that measures a society’s focus on the future", "The idea of people taking care of themselves", "Style where people encode messages in context", "Paying attention to and doing only one thing at a time"], ans: "A cultural dimension that measures a society’s focus on the future", exp: "Long-term orientation (长期导向) 衡量一个社会对未来的关注程度。" },
-                { id: 20, q: "Definition of: High-context culture", opts: ["Style where people encode messages in context (relationship, history) rather than explicit words", "Means paying attention to and doing only one thing at a time", "Refers to communication within and between businesses", "Dictionary meaning or literal meaning"], ans: "Style where people encode messages in context (relationship, history) rather than explicit words", exp: "High-context culture (高语境文化) 中，信息更多隐含在语境（关系、历史）中，而非直白的语言中。" },
-                { id: 21, q: "Definition of: Source text", opts: ["The original language text of a translation", "The text into which it is translated", "Dictionary meaning or literal meaning", "Extended meaning or associated meaning"], ans: "The original language text of a translation", exp: "Source text (原文) 是翻译的原始文本。" },
-                { id: 22, q: "Definition of: Target text", opts: ["The text into which it is translated", "The original language text of a translation", "Dictionary meaning or literal meaning", "Extended meaning or associated meaning"], ans: "The text into which it is translated", exp: "Target text (译文/目标文本) 是翻译后的文本。" },
-                { id: 23, q: "Definition of: Denotational meaning", opts: ["Dictionary meaning or literal meaning", "Extended meaning or associated meaning", "The inability to understand what is meant", "Refers to the rate, pitch, and volume qualities"], ans: "Dictionary meaning or literal meaning", exp: "Denotational meaning 是指字面意义或字典定义。" },
-                { id: 24, q: "Definition of: Connotational meaning", opts: ["Extended meaning or associated meaning", "Dictionary meaning or literal meaning", "The inability to understand what is meant", "Refers to communication without words"], ans: "Extended meaning or associated meaning", exp: "Connotational meaning 是指引申义或联想义。" },
-                { id: 25, q: "Definition of: Pragmatic failure/transfer", opts: ["The inability to understand what is meant by what is said", "Refers to the feeling of confusion or disorientation", "Refers to the act and process of sending messages", "Dictionary meaning or literal meaning"], ans: "The inability to understand what is meant by what is said", exp: "Pragmatic failure (语用失误) 指无法理解话语背后的真实意图（即言外之意）。" },
-                { id: 26, q: "Definition of: Nonverbal communication", opts: ["Refers to communication without the use of words", "Refers to the rate, pitch, and volume qualities of voice", "Refers to the act and process of sending messages", "Refers to communication norms in different cultures"], ans: "Refers to communication without the use of words", exp: "Nonverbal communication 是非言语沟通，即不使用文字的沟通。" },
-                { id: 27, q: "Definition of: Paralanguage", opts: ["Refers to the rate, pitch, and volume qualities of the voice", "Refers to communication without the use of words", "Means paying attention to and doing only one thing at a time", "Refers to the occasion involved and the people in it"], ans: "Refers to the rate, pitch, and volume qualities of the voice", exp: "Paralanguage (副语言) 指声音的语速、音调、音量等特征，它会影响信息的含义。" },
-                { id: 28, q: "Definition of: Monochronic-time cultures", opts: ["Means paying attention to and doing only one thing at a time", "Means being involved with many things at once", "A cultural dimension that measures a society’s focus on the future", "Style where people encode messages in context"], ans: "Means paying attention to and doing only one thing at a time", exp: "Monochronic (单向时间) 文化强调一次只做一件事，注重专注。" },
-                { id: 29, q: "Definition of: Polychronic-time cultures", opts: ["Means being involved with many things at once", "Means paying attention to and doing only one thing at a time", "Refers to communication without the use of words", "Refers to the occasion involved and the people in it"], ans: "Means being involved with many things at once", exp: "Polychronic (多向时间) 文化习惯同时处理多件事。" },
-                { id: 30, q: "Definition of: Buffer", opts: ["A paragraph that is pleasant and says neither “yes” nor “no”", "A message starts with clearly stating the main idea", "Refers to the rate, pitch, and volume qualities", "The original language text of a translation"], ans: "A paragraph that is pleasant and says neither “yes” nor “no”", exp: "Buffer (缓冲段) 是坏消息信函中的开头段落，通常客套、愉快且不置可否，用于缓解冲击。" },
-                { id: 31, q: "Definition of: Direct plan message", opts: ["A message starts with clearly stating the main idea/good news first", "A paragraph that is pleasant and says neither “yes” nor “no”", "Style where people encode messages in context", "Refers to communication within and between businesses"], ans: "A message starts with clearly stating the main idea/good news first", exp: "Direct plan (直接法) 信息的特点是开门见山，首先说明主要观点或好消息。" }
             ],
+            // Part 2: 26 Questions (Key Concepts from Main Doc)
+            matching_defs: [
+                { id: 1, q: "Definition of: Communication", opts: ["Refers to the act and process of sending and receiving messages among people", "Refers to interpersonal communication between members of different cultures", "Refers to communication norms in different cultures", "Refers to the occasion involved and the people in it"], ans: "Refers to the act and process of sending and receiving messages among people", exp: "Communication (沟通) 的基本定义：在人与人之间发送和接收信息的行为和过程。" },
+                { id: 2, q: "Definition of: Encoding", opts: ["Refers to the process of the sender putting the message into a signal", "Refers to the process of the receiver interpreting the signal", "Refers to the act and process of sending messages", "The inability to understand what is meant by what is said"], ans: "Refers to the process of the sender putting the message into a signal", exp: "Encoding (编码) 是发送者(Sender)将信息转化为信号的过程。" },
+                { id: 3, q: "Definition of: Decoding", opts: ["Refers to the process of the receiver interpreting the signal from the sender", "Refers to the process of the sender putting the message into a signal", "Refers to communication norms in different cultures", "Extended meaning or associated meaning"], ans: "Refers to the process of the receiver interpreting the signal from the sender", exp: "Decoding (解码) 是接收者(Receiver)解读来自发送者的信号的过程。" },
+                { id: 4, q: "Definition of: Social context", opts: ["Refers to the occasion involved and the people in it", "Refers to communication norms in different cultures", "Refers to the setting or situation within which communication takes place", "Refers to communication within and between businesses"], ans: "Refers to the occasion involved and the people in it", exp: "Social context (社会语境) 指的是沟通所涉及的场合(occasion)以及参与其中的人。" },
+                { id: 5, q: "Definition of: Cultural context", opts: ["Refers to communication norms in different cultures", "Refers to the occasion involved and the people in it", "Refers to interpersonal communication between members of different cultures", "Refers to communication without the use of words"], ans: "Refers to communication norms in different cultures", exp: "Cultural context (文化语境) 指的是不同文化中特定的沟通规范(norms)。" },
+                { id: 6, q: "Definition of: Intercultural Communication", opts: ["Refers to interpersonal communication between members of different cultures", "Refers to communication within and between businesses involving different cultures", "Refers to the act and process of sending messages", "Refers to communication norms in different cultures"], ans: "Refers to interpersonal communication between members of different cultures", exp: "Intercultural Communication (跨文化沟通) 特指不同文化成员之间的人际沟通。" },
+                { id: 7, q: "Definition of: Intercultural Business Communication", opts: ["Refers to communication within and between businesses that involve people from more than one culture", "Refers to interpersonal communication between members of different cultures", "Refers to the act and process of sending messages", "Values are at the core of culture"], ans: "Refers to communication within and between businesses that involve people from more than one culture", exp: "Intercultural Business Communication (跨文化商务沟通) 侧重于商业环境中涉及多种文化的沟通。" },
+                { id: 8, q: "Definition of: Stereotyping", opts: ["Refers to an overly simplified or generalized way of thinking about a person or a group", "Refers to the irrational dislike of a particular group", "Refers to the feeling of confusion or disorientation", "Belief that one is superior because of skin color"], ans: "Refers to an overly simplified or generalized way of thinking about a person or a group", exp: "Stereotyping (刻板印象) 是对某个人或群体的一种过度简化或概括的看法。" },
+                { id: 9, q: "Definition of: Prejudice", opts: ["Refers to the irrational dislike, suspicion or hatred of a particular group", "Refers to an overly simplified way of thinking", "Refers to the feeling of confusion or disorientation", "Your own culture is correct"], ans: "Refers to the irrational dislike, suspicion or hatred of a particular group", exp: "Prejudice (偏见) 强调的是一种非理性的厌恶、怀疑或仇恨。" },
+                { id: 10, q: "Definition of: Cultural shock", opts: ["Refers to the feeling of confusion or disorientation experienced in new situations", "Refers to an overly simplified way of thinking", "Refers to the irrational dislike of a group", "Refers to communication norms in different cultures"], ans: "Refers to the feeling of confusion or disorientation experienced in new situations", exp: "Cultural shock (文化冲击) 是面对陌生环境或人群时感到的困惑或迷失感。" },
+                { id: 11, q: "Definition of: Culture", opts: ["An abstract entity which involves usually manmade collective and shared artifacts, behavior patterns and values", "Refers to the act and process of sending messages", "Refers to communication norms in different cultures", "The idea of people taking care of themselves"], ans: "An abstract entity which involves usually manmade collective and shared artifacts, behavior patterns and values", exp: "Culture (文化) 是一个人造的、集体的、共享的产物（器物、行为、价值观），是人区别于动物的特征。" },
+                { id: 12, q: "Definition of: Sociocultural values", opts: ["System of criteria by which conduct is judged; preferability of one belief over another", "The idea of people taking care of themselves", "Refers to communication norms in different cultures", "Dictionary meaning or literal meaning"], ans: "System of criteria by which conduct is judged; preferability of one belief over another", exp: "Sociocultural values (社会文化价值观) 是判断行为的标准，即认为某种信念优于另一种信念。" },
+                { id: 13, q: "Definition of: Individualism", opts: ["The idea of people taking care of themselves and their immediate families", "A cultural dimension that measures a society’s focus on the future", "Paying attention to and doing only one thing at a time", "Refers to an overly simplified way of thinking"], ans: "The idea of people taking care of themselves and their immediate families", exp: "Individualism (个人主义) 强调个人照顾好自己和直系亲属。" },
+                { id: 14, q: "Definition of: Long-term orientation", opts: ["A cultural dimension that measures a society’s focus on the future", "The idea of people taking care of themselves", "Style where people encode messages in context", "Paying attention to and doing only one thing at a time"], ans: "A cultural dimension that measures a society’s focus on the future", exp: "Long-term orientation (长期导向) 衡量一个社会对未来的关注程度。" },
+                { id: 15, q: "Definition of: High-context culture", opts: ["Style where people encode messages in context (relationship, history) rather than explicit words", "Means paying attention to and doing only one thing at a time", "Refers to communication within and between businesses", "Dictionary meaning or literal meaning"], ans: "Style where people encode messages in context (relationship, history) rather than explicit words", exp: "High-context culture (高语境文化) 中，信息更多隐含在语境（关系、历史）中，而非直白的语言中。" },
+                { id: 16, q: "Definition of: Source text", opts: ["The original language text of a translation", "The text into which it is translated", "Dictionary meaning or literal meaning", "Extended meaning or associated meaning"], ans: "The original language text of a translation", exp: "Source text (原文) 是翻译的原始文本。" },
+                { id: 17, q: "Definition of: Target text", opts: ["The text into which it is translated", "The original language text of a translation", "Dictionary meaning or literal meaning", "Extended meaning or associated meaning"], ans: "The text into which it is translated", exp: "Target text (译文/目标文本) 是翻译后的文本。" },
+                { id: 18, q: "Definition of: Denotational meaning", opts: ["Dictionary meaning or literal meaning", "Extended meaning or associated meaning", "The inability to understand what is meant", "Refers to the rate, pitch, and volume qualities"], ans: "Dictionary meaning or literal meaning", exp: "Denotational meaning 是指字面意义或字典定义。" },
+                { id: 19, q: "Definition of: Connotational meaning", opts: ["Extended meaning or associated meaning", "Dictionary meaning or literal meaning", "The inability to understand what is meant", "Refers to communication without words"], ans: "Extended meaning or associated meaning", exp: "Connotational meaning 是指引申义或联想义。" },
+                { id: 20, q: "Definition of: Pragmatic failure/transfer", opts: ["The inability to understand what is meant by what is said", "Refers to the feeling of confusion or disorientation", "Refers to the act and process of sending messages", "Dictionary meaning or literal meaning"], ans: "The inability to understand what is meant by what is said", exp: "Pragmatic failure (语用失误) 指无法理解话语背后的真实意图（即言外之意）。" },
+                { id: 21, q: "Definition of: Nonverbal communication", opts: ["Refers to communication without the use of words", "Refers to the rate, pitch, and volume qualities of voice", "Refers to the act and process of sending messages", "Refers to communication norms in different cultures"], ans: "Refers to communication without the use of words", exp: "Nonverbal communication 是非言语沟通，即不使用文字的沟通。" },
+                { id: 22, q: "Definition of: Paralanguage", opts: ["Refers to the rate, pitch, and volume qualities of the voice", "Refers to communication without the use of words", "Means paying attention to and doing only one thing at a time", "Refers to the occasion involved and the people in it"], ans: "Refers to the rate, pitch, and volume qualities of the voice", exp: "Paralanguage (副语言) 指声音的语速、音调、音量等特征，它会影响信息的含义。" },
+                { id: 23, q: "Definition of: Monochronic-time cultures", opts: ["Means paying attention to and doing only one thing at a time", "Means being involved with many things at once", "A cultural dimension that measures a society’s focus on the future", "Style where people encode messages in context"], ans: "Means paying attention to and doing only one thing at a time", exp: "Monochronic (单向时间) 文化强调一次只做一件事，注重专注。" },
+                { id: 24, q: "Definition of: Polychronic-time cultures", opts: ["Means being involved with many things at once", "Means paying attention to and doing only one thing at a time", "Refers to communication without the use of words", "Refers to the occasion involved and the people in it"], ans: "Means being involved with many things at once", exp: "Polychronic (多向时间) 文化习惯同时处理多件事。" },
+                { id: 25, q: "Definition of: Buffer", opts: ["A paragraph that is pleasant and says neither “yes” nor “no”", "A message starts with clearly stating the main idea", "Refers to the rate, pitch, and volume qualities", "The original language text of a translation"], ans: "A paragraph that is pleasant and says neither “yes” nor “no”", exp: "Buffer (缓冲段) 是坏消息信函中的开头段落，通常客套、愉快且不置可否，用于缓解冲击。" },
+                { id: 26, q: "Definition of: Direct plan message", opts: ["A message starts with clearly stating the main idea/good news first", "A paragraph that is pleasant and says neither “yes” nor “no”", "Style where people encode messages in context", "Refers to communication within and between businesses"], ans: "A message starts with clearly stating the main idea/good news first", exp: "Direct plan (直接法) 信息的特点是开门见山，首先说明主要观点或好消息。" }
+            ],
+            // Part 3: Blanks (from Supplement)
             blanks: [
                 { id: 1, q: "Communication Process: If I am talking with a friend, and I want to tell them I disagree with them. I, the (1)________, will put my thoughts into words.", ans: "sender", exp: "发送者 (Sender) 是信息的发出方。" },
                 { id: 2, q: "Communication Process: I will put my thoughts into words, or (2)________ them.", ans: "encode", exp: "编码 (Encode) 是将思想转化为符号/语言的过程。" },
@@ -187,20 +200,21 @@
                 { id: 9, q: "Iceberg Model: The tip, the portion above the water, represents (9)________ elements of culture that can be seen by all.", ans: "visible", exp: "冰山水面以上的部分代表可见的 (visible) 文化要素（如行为、器物）。" },
                 { id: 10, q: "Iceberg Model: The cultural elements below the waterline are (10)________ and not readily recognized by those outside of our culture.", ans: "invisible", exp: "冰山水面以下的部分代表不可见的 (invisible) 文化要素（如价值观、信仰）。" }
             ],
+            // Part 4: MC (from Main Doc)
             mc: [
                 {id:1, q:"_____ is the total accumulation of beliefs, customs, values, behaviors, institutions and communication patterns that are shared, learned and passed down through the generations in an identifiable group of people.", opts:["intercultural communication", "culture", "business communication", "feedback"], ans:"culture", exp:"Culture (文化) 是一个群体共享、习得并代代相传的信仰、习俗、行为等的总和。"},
                 {id:2, q:"_____ is the communication at the same level in an organization.", opts:["horizontal communication", "ethnocentrism", "business communication", "lateral communication"], ans:"lateral communication", exp:"Lateral (或 Horizontal) communication 指组织中同一层级之间的沟通。"},
                 {id:3, q:"_______ is the communication within business and administration, aiming at a common objective and profits for both the individuals and organizations.", opts:["lateral communication", "ethnocentrism", "business communication", "intercultural communication"], ans:"business communication", exp:"Business communication (商务沟通) 的目标是实现共同目标和利润。"},
                 {id:4, q:"______ is a process by which information is exchanged between individuals through a common system of symbols, signs, or behavior.", opts:["ethnocentrism", "noise", "communication", "horizontal communication"], ans:"communication", exp:"Communication (沟通) 是通过符号系统交换信息的过程。"},
                 {id:5, q:"_______ is the belief that your own cultural background... is superior.", opts:["culture", "communication", "ethnocentrism", "sender"], ans:"ethnocentrism", exp:"Ethnocentrism (民族中心主义) 指认为自己的文化优于其他文化。"},
-                {id:6, q:"Power distance is a concept developed by Hofstede to describe ________________.", opts:["the extent to which the less powerful members... accept and expect that power is distributed unequally", "the power of multinational organizations", "the power differential between developed and less developed countries", "the power difference between men and women"], ans:"the extent to which the less powerful members... accept and expect that power is distributed unequally", exp:"权力距离 (Power Distance) 定义：弱势成员对权力不平等分配的接受和预期程度。"},
+                {id:6, q:"Power distance is a concept developed by Hofstede to describe ________________.", opts:["the extent to which the less powerful members of organizations and institutions (like the family) accept and expect that power is distributed unequally", "the power of multinational organizations", "the power differential between developed and less developed countries", "the power difference between men and women"], ans:"the extent to which the less powerful members of organizations and institutions (like the family) accept and expect that power is distributed unequally", exp:"权力距离 (Power Distance) 定义：弱势成员对权力不平等分配的接受和预期程度。"},
                 {id:7, q:"The opinion that everyone has a position and clearly defined privileges is____.", opts:["a view of hierarchical structure of social relationship", "a view of group orientation of social relationship", "a view of individual orientation structure of social relationship", "none of the above"], ans:"a view of hierarchical structure of social relationship", exp:"Hierarchical structure (等级结构) 认为每个人都有明确的地位和特权。"},
                 {id:8, q:"A person’s culture is ___________.", opts:["innate", "inborn", "learned", "accidental"], ans:"learned", exp:"文化是习得的 (Learned)，不是天生 (innate/inborn) 的。"},
                 {id:9, q:"Being-in-becoming orientation stresses the idea of ____________.", opts:["development and growth", "reflection", "enjoyment of present life", "diligence"], ans:"development and growth", exp:"Being-in-becoming 强调个人的发展与成长 (development and growth)。"},
                 {id:10, q:"The fundamental issue in the Power Distance Dimension is how a society handles _______ among people.", opts:["coordination", "conflicts", "equalities", "inequalities"], ans:"inequalities", exp:"权力距离的核心议题是社会如何处理人与人之间的不平等 (inequalities)。"},
                 {id:11, q:"The High Uncertainty Avoidance dimension can be defined as the lack of _________for ambiguity and uncertainty.", opts:["tolerance", "understanding", "communication", "interaction"], ans:"tolerance", exp:"高不确定性规避意味着缺乏对模糊和不确定性的容忍度 (tolerance)。"},
                 {id:12, q:"Collectivistic countries typically consist of people that can expect their relatives to look after them in exchange for _______.", opts:["loyalty", "identity", "agreement", "negotiation"], ans:"loyalty", exp:"在集体主义国家，人们以忠诚 (loyalty) 换取群体的保护。"},
-                {id:13, q:"What is intercultural competence?", opts:["The ability to travel frequently", "The ability to communicate effectively and appropriately in intercultural situations...", "The ability to speak multiple languages fluently", "The ability to follow social media trends"], ans:"The ability to communicate effectively and appropriately in intercultural situations...", exp:"跨文化能力是指在跨文化情境中进行有效且得体沟通的能力。"},
+                {id:13, q:"What is intercultural competence?", opts:["The ability to travel frequently", "The ability to communicate effectively and appropriately in intercultural situations based on one's intercultural knowledge, skills, and attitudes", "The ability to speak multiple languages fluently", "The ability to follow social media trends"], ans:"The ability to communicate effectively and appropriately in intercultural situations based on one's intercultural knowledge, skills, and attitudes", exp:"跨文化能力是指在跨文化情境中进行有效且得体沟通的能力。"},
                 {id:14, q:"Which term refers to negatively judging aspects of another culture by the standards of one’s own culture?", opts:["Cultural relativism", "Ethnocentrism", "Stereotyping", "Prejudice"], ans:"Ethnocentrism", exp:"用自己文化的标准负面评价他国文化是 Ethnocentrism (民族中心主义)。"},
                 {id:15, q:"Which is the first phase of intercultural shock?", opts:["Honeymoon phase", "cultural shock phase", "recovery phase", "adjustment phase"], ans:"Honeymoon phase", exp:"文化冲击的第一阶段通常是蜜月期 (Honeymoon phase)，此时对新文化充满新鲜感。"},
                 {id:16, q:"Which is regarded as the “least intercultural” end of the continuum?", opts:["Intracultural communication", "Intercultural communication", "International communication", "Interracial communication"], ans:"Intracultural communication", exp:"Intracultural (文化内/族内) 沟通发生在同一文化成员之间，跨文化程度最低。"},
@@ -242,7 +256,7 @@
                 {id:52, q:"How does nonverbal behavior control the pace or flow of communication?", opts:["Be silent", "Gesture of stopping", "Clap hands", "All of the above (Raise voice etc.)"], ans:"All of the above (Raise voice etc.)", exp:"沉默、手势、声音变化等非言语行为都可以控制沟通的节奏。"},
                 {id:53, q:"Which of the following belongs to nonverbal communication?", opts:["keep a 50 cm personal distance from a client", "being 15 minutes late for a meeting", "avoiding eye contact when talking to a client", "All (Silence/Gestures/Time)"], ans:"avoiding eye contact when talking to a client", exp:"避免眼神接触 (avoiding eye contact) 是一种典型的非言语沟通行为。"},
                 {id:54, q:"About eye contact, which of the following is right?", opts:["To look at someone in the eye in Japan is valued", "In Muslin countries men and women are not supposed to have much eye contact", "Chinese usually lower their eyes out of respect.", "In north America and northern Europe, eye contact shows openness, trustworthiness and integrity."], ans:"In north America and northern Europe, eye contact shows openness, trustworthiness and integrity.", exp:"在北美和北欧，眼神接触被视为开放、诚实和正直的表现。"},
-                {id:55, q:"Which of the following is right about the touch culture?", opts:["It refers to the culture whose people like to stand close while talking...", "Arabs, southern and western Europeans, Jews and Latins belong to touch culture", "Americans, northern Europeans and Orientals belong to no touch culture.", "For some cultures, it’s the powerful touch the less powerful..."], ans:"Arabs, southern and western Europeans, Jews and Latins belong to touch culture", exp:"阿拉伯人、南欧人、拉丁人属于接触文化 (touch culture)，习惯频繁的身体接触。"},
+                {id:55, q:"Which of the following is right about the touch culture?", opts:["It refers to the culture whose people like to stand close while talking and touch each other frequently.", "Arabs, southern and western Europeans, Jews and Latins belong to touch culture", "Americans, northern Europeans and Orientals belong to no touch culture.", "For some cultures, it’s the powerful touch the less powerful..."], ans:"Arabs, southern and western Europeans, Jews and Latins belong to touch culture", exp:"阿拉伯人、南欧人、拉丁人属于接触文化 (touch culture)，习惯频繁的身体接触。"},
                 {id:56, q:"Which of the following belong to paralanguage?", opts:["laugh", "silence", "fillers like “un-huh”", "All of the above plus volume"], ans:"All of the above plus volume", exp:"副语言包括笑声、沉默、填充词以及音量等声音特征。"},
                 {id:57, q:"______ letters will explain the purpose within the first two paragraphs, which reflects their value of time and directness.", opts:["Japan", "Chinese", "American", "Arab"], ans:"American", exp:"美式 (American) 信函通常在开头两段直接说明目的，体现了对时间和直接性的重视。"},
                 {id:58, q:"_____ closing is trite and stereotyped by expressing wishes for receiver’s health or prosperity.", opts:["Japanese", "Chinese", "American", "Arab"], ans:"Chinese", exp:"中式 (Chinese) 信函结尾常包含对健康或繁荣的客套祝愿。"},
@@ -259,6 +273,7 @@
                 {id:69, q:"What are commonly-used complimentary closings in business letter? (Multi)", opts:["Cordially", "Yours faithfully", "Your sincerely", "All of the above"], ans:"All of the above", exp:"Cordially, Yours faithfully, Yours sincerely 都是常见的商务信函结语。"},
                 {id:70, q:"In low-context cultures, a deliberate concealment of emotion is considered to be __________.", opts:["poker-faced", "shamed", "insincere", "resentful"], ans:"insincere", exp:"在低语境文化中，刻意隐藏情感常被认为是不真诚 (insincere)。"}
             ],
+            // Part 5: TF A (from Supplement, 40 questions)
             tf_a: [
                 {id:1, q:"We are born with our cultural characteristics.", ans:"False", exp:"错误。文化是后天习得的 (learned)，并非与生俱来 (born with)。"},
                 {id:2, q:"What we eat is a biological process and how we eat it is cultural.", ans:"True", exp:"正确。'吃'是生物需求，但饮食习惯（如餐具、礼仪）是文化产物。"},
@@ -283,7 +298,7 @@
                 {id:21, q:"Nonverbal communication can never be intentional.", ans:"False", exp:"错误。非言语沟通可以是有意为之的，例如手势、表情符号。"},
                 {id:22, q:"When we hold up our hand in the gesture that signifies a person to stop at the same time we actually say the word 'stop'. This implies one of the functions of nonverbal communication which is repeating.", ans:"True", exp:"正确。手势和语言同时表达相同意思，起到了'重复' (repeating) 的作用。"},
                 {id:23, q:"Verbal communication uses symbols, but nonverbal communication does not.", ans:"False", exp:"错误。非言语沟通也使用符号，如手势、徽章等。"},
-                {id:24, q:"When nonverbal behavior contradicts a verbal message, people tend to rely more on the verbal message because it happens at a more conscious level.", ans:"False", exp:"错误。当言行不一致时，人们更倾向于相信非言语信息，因为它更难伪装。"},
+                {id:24, q:"When nonverbal behavior contradicts a verbal message, people tend to rely more on the verbal message because it happens at a more conscious level.", ans:"False", exp:"错误。当言行不一致，人们更倾向于相信非言语信息，因为它更难伪装。"},
                 {id:25, q:"In U.S. society protruding one's tongue is an unmistakable gesture of mocking contempt, whereas in southern China it is an expression of embarrassment over a faux pas.", ans:"True", exp:"正确。吐舌头在美国代表嘲弄，在中国南方（传统上）代表尴尬或惊讶。"},
                 {id:26, q:"Arabs believe that it is an act of friendship to 'breathe the breath' of the person with whom they converse and to feel their presence by smelling.", ans:"True", exp:"正确。阿拉伯文化属于高接触文化，近距离呼吸对方气息被视为友好。"},
                 {id:27, q:"The Germans prefer a firm handshake, which is seen as a symbol of strength and character.", ans:"True", exp:"正确。德国人偏好有力地握手。"},
@@ -301,6 +316,7 @@
                 {id:39, q:"Persuasion is accomplished through a direct approach in low-context cultures.", ans:"False", exp:"错误。即使在低语境文化，劝说也常采用 AIDA 等循序渐进的策略，而非完全直接。"},
                 {id:40, q:"German reports stress content over form.", ans:"True", exp:"正确。德国报告注重实质内容和严谨性。"}
             ],
+            // Part 6: TF B (from Main Doc, 96 questions)
             tf_b: [
                 {id:1, q:"Intercultural communication takes place between people whose cultural perception and symbol systems are exactly same.", ans:"False", exp:"错误。如果感知和符号系统完全相同，那就不是“跨”文化沟通了。"},
                 {id:2, q:"Receiver refers to the person who transmits a message.", ans:"False", exp:"错误。Receiver 是接收者，Sender 才是发送者 (transmits)。"},
@@ -359,7 +375,7 @@
                 {id:55, q:"Words in general use usually acquire connotational meanings.", ans:"True", exp:"正确。常用词往往带有丰富的内涵义。"},
                 {id:56, q:"Inductive pattern is less indirect.", ans:"False", exp:"错误。归纳法因为铺垫多，通常更间接 (more indirect)。"},
                 {id:57, q:"Members of low uncertainty avoidance cultures use the succinct style.", ans:"True", exp:"正确。（Doc 2 答案给 T，可能指他们不废话；但通常认为高语境才用 succinct。此处遵从文档答案）"},
-                {id:58, q:"In Chinese culture, kinship terms are not only used with one's own family, but also to other people (e.g., \"police uncle\").", ans:"True", exp:"正确。"},
+                {id:58, q:'In Chinese culture, kinship terms are not only used with one\'s own family, but also to other people (e.g., "police uncle").', ans:"True", exp:"正确。"},
                 {id:59, q:"Translators and interpreters can be thought of as cultural brokers, as they must be sensitive to the contexts of intercultural communication.", ans:"True", exp:"正确。翻译是文化中介。"},
                 {id:60, q:"It is a pragmatic failure to greet an American with “Where are you going”.", ans:"False", exp:"错误。（答案给F，可能因为这对美国人来说属于侵犯隐私的问候，不算 Pragmatic failure? 或者认为这不是问候。通常这被视为典型的语用失误案例，但此处遵从文档答案F）"},
                 {id:61, q:"Regarding verbal style, Canada is direct, exacting, personal, instrumental.", ans:"True", exp:"正确。加拿大风格接近美国，直接且工具性强。"},
@@ -379,7 +395,7 @@
                 {id:75, q:"Posture is the position in which you hold your body when standing or sitting.", ans:"True", exp:"正确。"},
                 {id:76, q:"Americans often smile to cover up confusion or embarrassment.", ans:"False", exp:"错误。这是日本人的习惯。"},
                 {id:77, q:"The British, like Americans, believe that looking someone directly in the eye is a mark of rudeness until a more intimate relationship is established.", ans:"False", exp:"错误。英美文化都重视眼神交流，不认为粗鲁。"},
-                {id:78, q:"The date in a business letter can be written as either \"15 November 2012\" or \"Nov. 15, 2012\".", ans:"True", exp:"正确。英式和美式写法。"},
+                {id:78, q:'The date in a business letter can be written as either "15 November 2012" or "Nov. 15, 2012".', ans:"True", exp:"正确。英式和美式写法。"},
                 {id:79, q:"Written communication is the communication by means of written symbols, either printed or handwritten.", ans:"False", exp:"错误。（答案给F，可能定义不完整，比如忽略了电子媒介等）"},
                 {id:80, q:"Nonverbal codes play an important part in communication or intercultural communication. But it is not as important as verbal codes.", ans:"False", exp:"错误。非言语往往比言语更重要。"},
                 {id:81, q:"In Japan, people greet each other by bowing instead of shaking hands.", ans:"True", exp:"正确。"},
@@ -402,7 +418,7 @@
         };
 
         // --- APP LOGIC ---
-        let currentModule = 'matching';
+        let currentModule = 'matching_basic';
         let currentQuestionIndex = 0;
         let isShuffled = false;
         let questionOrder = [];
@@ -428,7 +444,7 @@
         };
 
         function init() {
-            switchModule('matching');
+            switchModule('matching_basic');
         }
 
         function switchModule(moduleName) {
@@ -450,11 +466,12 @@
 
         function getModuleTitle(m) {
             const map = {
-                'matching': '核心概念连线',
-                'blanks': '理论模型填空',
+                'matching_basic': '核心连线',
+                'matching_defs': '名词解释',
+                'blanks': '理论填空',
                 'mc': '单项选择题',
-                'tf_a': '判断题 (强化)',
-                'tf_b': '判断题 (综合)'
+                'tf_a': '判断题 I',
+                'tf_b': '判断题 II'
             };
             return map[m] || 'Module';
         }
@@ -480,12 +497,21 @@
         function jumpToQuestion() {
             const val = parseInt(dom.jumpInput.value);
             if (val > 0 && val <= DB[currentModule].length) {
-                currentQuestionIndex = val - 1; // Map 1-based input to 0-based index
-                // Note: In shuffled mode, this jumps to the Nth question in the *shuffled* order, not ID #N.
-                // This is standard behavior for "Next/Prev" logic.
+                currentQuestionIndex = val - 1; 
                 renderQuestion();
                 dom.jumpInput.value = '';
             }
+        }
+
+        // --- Helper Function for Shuffling Options ---
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
         }
 
         function renderQuestion() {
@@ -534,16 +560,17 @@
                 }, 50);
 
             } else if (currentModule.startsWith('tf')) {
+                // True/False usually don't need shuffling, but let's keep them fixed for clarity
                 ['True', 'False'].forEach(opt => createBtn(opt, qData));
             } else {
-                // MC & Matching
-                qData.opts.forEach(opt => createBtn(opt, qData));
+                // MC & Matching - SHUFFLE OPTIONS HERE
+                const shuffledOpts = shuffleArray([...qData.opts]);
+                shuffledOpts.forEach(opt => createBtn(opt, qData));
             }
         }
 
         function createBtn(text, qData) {
             const btn = document.createElement('button');
-            // Enhanced Option Button Style
             btn.className = 'option-btn w-full text-left p-5 rounded-xl border-2 border-purple-50 bg-white hover:border-purple-300 hover:bg-purple-50 text-gray-700 font-medium text-base md:text-lg shadow-sm mb-3';
             btn.textContent = text;
             btn.onclick = () => check(text, btn, qData);
@@ -560,7 +587,6 @@
 
             if(isCorrect) {
                 btn.className = 'w-full text-left p-5 rounded-xl border-2 border-green-500 bg-green-50 text-green-900 font-bold shadow-md';
-                // Green Icon feedback
                 btn.innerHTML += ' <i class="fas fa-check-circle float-right text-green-600 mt-1"></i>';
                 
                 showFeedback(true, qData.exp || "Correct!");
@@ -599,14 +625,16 @@
                 input.className = 'flex-1 p-4 border-2 border-green-500 bg-green-50 rounded-xl text-green-900 font-bold';
                 showFeedback(true, qData.exp || "Correct!");
                 
-                // AUTO JUMP LOGIC
                 isProcessing = true;
                 setTimeout(() => {
                     nextQuestion();
                     isProcessing = false;
                 }, 1000);
             } else {
+                // WRONG ANSWER LOGIC
                 input.className = 'flex-1 p-4 border-2 border-red-500 bg-red-50 rounded-xl text-red-900 shake font-medium';
+                
+                // Force reveal feedback immediately
                 dom.feedbackArea.classList.remove('hidden');
                 dom.feedbackArea.className = 'mt-8 rounded-xl p-5 border-l-4 shadow-sm bg-red-50 border-red-500 flex-shrink-0';
                 
@@ -618,23 +646,18 @@
                 title.className = 'text-lg font-bold text-red-700';
                 
                 const msg = document.getElementById('feedback-msg');
-                msg.textContent = "答案不正确，请重新输入。";
-                msg.className = "mt-2 text-red-800";
-                
-                // Reset styling for retry
-                setTimeout(() => {
-                    input.className = 'flex-1 p-4 border-2 border-purple-200 rounded-xl focus:border-purple-500 focus:outline-none transition text-lg bg-gray-50';
-                    input.focus();
-                }, 1200);
+                // SHOW CORRECT ANSWER AS REQUESTED
+                msg.innerHTML = `
+                    <div class="mb-2"><strong>正确答案:</strong> <span class="text-green-700 font-bold font-mono text-lg">${qData.ans}</span></div>
+                    <div><strong>解析:</strong> ${qData.exp || '暂无解析'}</div>
+                `;
+                msg.className = "mt-2 text-red-900";
             }
         }
 
         function showFeedback(success, msg) {
             dom.feedbackArea.classList.remove('hidden');
-            const colorClass = success ? 'green' : 'red'; // Note: For wrong MC, we show red feedback but keep explanation
-            
-            // For incorrect MC selection, we want to show the explanation in a neutral/learning way after the red flash
-            // But usually red title + explanation is fine.
+            const colorClass = success ? 'green' : 'red'; 
             
             dom.feedbackArea.className = `mt-8 rounded-xl p-5 border-l-4 shadow-sm flex-shrink-0 bg-${colorClass}-50 border-${colorClass}-500`;
             
