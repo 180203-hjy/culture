@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>+1教你学文化 (V12 - Reverted & Smart)</title>
+    <title>+1教你学文化 (Final V15 - Fixed Blanks)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -36,6 +36,7 @@
             <div class="flex-1 overflow-y-auto p-2 space-y-1 scroll-area">
                 <button onclick="switchModule('matching_basic')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group nav-active" id="nav-matching_basic"><span class="font-medium text-sm md:text-base"><i class="fas fa-random w-5 mr-2 opacity-70"></i>核心连线 (Supp)</span><span class="text-xs bg-purple-700 px-2 py-0.5 rounded-full">5</span></button>
                 <button onclick="switchModule('matching_defs')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-matching_defs"><span class="font-medium text-sm md:text-base"><i class="fas fa-book-open w-5 mr-2 opacity-70"></i>名词解释 (Main)</span><span class="text-xs bg-purple-700 px-2 py-0.5 rounded-full">26</span></button>
+                <div class="h-px bg-purple-800 my-2 opacity-50"></div>
                 <button onclick="switchModule('blanks')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-blanks"><span class="font-medium text-sm md:text-base"><i class="fas fa-pencil-alt w-5 mr-2 opacity-70"></i>理论填空 (Supp)</span><span class="text-xs bg-purple-700 px-2 py-0.5 rounded-full">10</span></button>
                 <button onclick="switchModule('mc')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-mc"><span class="font-medium text-sm md:text-base"><i class="fas fa-list-ul w-5 mr-2 opacity-70"></i>选择题 (Main)</span><span class="text-xs bg-purple-700 px-2 py-0.5 rounded-full">70</span></button>
                 <button onclick="switchModule('tf_a')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-purple-800 transition flex items-center justify-between group" id="nav-tf_a"><span class="font-medium text-sm md:text-base"><i class="fas fa-check-square w-5 mr-2 opacity-70"></i>判断题 I (Supp)</span><span class="text-xs bg-purple-700 px-2 py-0.5 rounded-full">30</span></button>
@@ -52,7 +53,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
-                    <label class="flex items-center bg-purple-50 px-3 py-1.5 rounded-full cursor-pointer active:bg-purple-100"><input type="checkbox" id="shuffle-toggle" class="w-4 h-4 text-purple-600 rounded" onchange="toggleShuffle()"><span class="ml-1.5 text-xs font-bold text-purple-700">随机</span></label>
+                    <label class="flex items-center bg-purple-50 px-3 py-1.5 rounded-full cursor-pointer active:bg-purple-100"><input type="checkbox" id="shuffle-toggle" class="w-4 h-4 text-purple-600 rounded" onchange="toggleShuffle()"><span class="ml-1.5 text-xs font-bold text-purple-700">随机题目</span></label>
                     <div class="hidden sm:flex items-center bg-white border border-gray-200 rounded-lg p-0.5"><input type="number" id="jump-input" class="w-10 text-center text-xs outline-none p-1" placeholder="#"><button onclick="jumpToQuestion()" class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-bold">Go</button></div>
                 </div>
             </header>
@@ -79,7 +80,7 @@
     </div>
 
     <script>
-        // --- 1. 名词解释标准库 (Smart Lookup) ---
+        // V11 标准化定义库 (用于名词解释)
         const DEFS = {
             1: "Refers to the act and process of sending and receiving messages among people",
             2: "Refers to the process of the sender putting the message into a signal",
@@ -110,6 +111,7 @@
         };
 
         const DB = {
+            // V6 核心连线
             matching_basic: [
                 { id: 1, q: "Definition of: Racism", opts: ["Superior because of color of skin", "Anxiety from losing all familiar signs", "Rigid and irrational generalization about a group", "The belief that your own culture is correct"], ans: "Superior because of color of skin", exp: "Racism (种族主义) 指的是仅仅因为肤色或种族而产生的优越感。" },
                 { id: 2, q: "Definition of: Culture Shock", opts: ["Anxiety from losing all familiar signs", "Superior because of color of skin", "Refers to communication norms in different cultures", "The feeling of confusion or disorientation"], ans: "Anxiety from losing all familiar signs", exp: "Culture Shock (文化冲击) 是指因为失去了熟悉的符号和环境而产生的焦虑感。" },
@@ -117,7 +119,7 @@
                 { id: 4, q: "Definition of: Avoidance of the unfamiliar", opts: ["Birds of a feather flock together", "Your own culture is correct", "Rigid and irrational generalization about a group", "Paying attention to and doing only one thing at a time"], ans: "Birds of a feather flock together", exp: "Avoidance (回避不熟悉的事物) 常表现为'物以类聚' (Birds of a feather flock together)。" },
                 { id: 5, q: "Definition of: Ethnocentrism", opts: ["Your own culture is correct", "Superior because of color of skin", "Anxiety from losing all familiar signs", "Refers to the process of the sender putting the message into a signal"], ans: "Your own culture is correct", exp: "Ethnocentrism (民族中心主义) 指认为自己的文化是正确的、优越的。" },
             ],
-            // --- 2. Matching Defs (Using DEFS for Smart Lookup) ---
+            // V11 名词解释 (使用DEFS)
             matching_defs: [
                 { id: 1, q: "Definition of: Communication", ans: DEFS[1], opts: [DEFS[1], DEFS[6], DEFS[5], DEFS[4]], exp: "Communication (沟通)。" },
                 { id: 2, q: "Definition of: Encoding", ans: DEFS[2], opts: [DEFS[2], DEFS[3], DEFS[1], "The inability to understand what is meant by what is said"], exp: "Encoding (编码)。" },
@@ -146,7 +148,7 @@
                 { id: 25, q: "Definition of: Buffer", ans: DEFS[25], opts: [DEFS[25], DEFS[26], DEFS[22], DEFS[16]], exp: "Buffer (缓冲段)。" },
                 { id: 26, q: "Definition of: Direct plan message", ans: DEFS[26], opts: [DEFS[26], DEFS[25], DEFS[15], DEFS[7]], exp: "Direct plan (直接法)。" }
             ],
-            // --- 3. REVERTED SECTIONS (Based on V6/V8 state as requested) ---
+            // V6 理论填空
             blanks: [
                 { id: 1, q: "Communication Process: If I am talking with a friend, and I want to tell them I disagree with them. I, the (1)________, will put my thoughts into words.", ans: "sender", exp: "发送者 (Sender)。" },
                 { id: 2, q: "Communication Process: I will put my thoughts into words, or (2)________ them.", ans: "encode", exp: "编码 (Encode)。" },
@@ -159,6 +161,7 @@
                 { id: 9, q: "Iceberg Model: The tip, the portion above the water, represents (9)________ elements of culture that can be seen by all.", ans: "visible", exp: "可见的 (visible)。" },
                 { id: 10, q: "Iceberg Model: The cultural elements below the waterline are (10)________ and not readily recognized by those outside of our culture.", ans: "invisible", exp: "不可见的 (invisible)。" }
             ],
+            // V6 选择题 (70题)
             mc: [
                 {id:1, q:"_____ is the total accumulation of beliefs, customs, values, behaviors, institutions and communication patterns that are shared, learned and passed down through the generations in an identifiable group of people.", opts:["intercultural communication", "culture", "business communication", "feedback"], ans:"culture", exp:"Culture (文化) 是一个群体共享、习得并代代相传的信仰、习俗、行为等的总和。"},
                 {id:2, q:"_____ is the communication at the same level in an organization.", opts:["horizontal communication", "ethnocentrism", "business communication", "lateral communication"], ans:"lateral communication", exp:"Lateral (或 Horizontal) communication 指组织中同一层级之间的沟通。"},
@@ -241,6 +244,7 @@
                 // MULTI-SELECT END
                 {id:70, type:"multi", q:"In low-context cultures, a deliberate concealment of emotion is considered to be __________.", opts:["poker-faced", "shamed", "insincere", "resentful"], ans:["poker-faced", "insincere"], exp:"Updated Key: A, C. 在低语境文化中，刻意隐藏情感常被认为是不真诚或扑克脸。"}
             ],
+            // V6 判断题 I
             tf_a: [
                 {id:1, q:"We are born with our cultural characteristics.", ans:"False", exp:"错误。文化是后天习得的 (learned)，并非与生俱来 (born with)。(Group A)"},
                 {id:2, q:"What we eat is a biological process and how we eat it is cultural.", ans:"True", exp:"正确。'吃'是生物需求，但饮食习惯（如餐具、礼仪）是文化产物。"},
@@ -273,6 +277,7 @@
                 {id:29, q:"Persuasion is accomplished through a direct approach in low-context cultures.", ans:"True", exp:"正确 (Correct per Key). (Note: Originally F, Key indicates T)."},
                 {id:30, q:"German reports stress content over form.", ans:"True", exp:"正确。德国报告注重实质内容和严谨性。"}
             ],
+            // V6 判断题 II
             tf_b: [
                 {id:1, q:"Intercultural communication takes place between people whose cultural perception and symbol systems are exactly same.", ans:"False", exp:"错误。如果文化感知和符号系统完全相同，就不存在跨文化（Intercultural）沟通，而是文化内沟通。"},
                 {id:2, q:"Receiver refers to the person who transmits a message.", ans:"False", exp:"错误。Receiver 是接收者，负责解码。Sender 才是发送（transmits）信息的人。"},
@@ -329,8 +334,8 @@
                 {id:53, q:"Cricket in English is a happy insect... Yet in Chinese cricket signifies the coming of autumn, so there is always a feeling of sadness attached to it.", ans:"True", exp:"正确。同一事物（蟋蟀）在不同文化中引发不同的情感联想。"},
                 {id:54, q:"Easterners tend to associate redness with something dangerous, threatening cruelty or blooding and communism.", ans:"False", exp:"错误。这是西方人对红色的联想；东方人通常认为红色代表吉祥、喜庆。"},
                 
-                // --- FIXED QUESTIONS BELOW ---
-                {id:55, q:"Words in general use usually acquire connotational meanings.", ans:"True", exp:"Correct. 一般常用词通常会获得内涵意义 (Connotational meanings)。(Old key F -> New True)"},
+                // --- FIXED QUESTIONS BELOW (V6 Logic) ---
+                {id:55, q:"Words in general use usually acquire connotational meanings.", ans:"False", exp:"False. (Fixed per Doc). Words in general use typically convey denotational (literal) meaning."},
                 {id:56, q:"Inductive pattern is less indirect.", ans:"False", exp:"Incorrect. Inductive (specific to general) is usually considered MORE indirect (e.g. Chinese style) than Deductive. (Old key T -> New False)"},
                 {id:57, q:"Members of low uncertainty avoidance cultures use the succinct style.", ans:"False", exp:"Incorrect. Succinct style (silence) is typically found in High Context/High UA cultures. (Old key T -> New False)"},
                 {id:58, q:'In Chinese culture, kinship terms are not only used with one\'s own family, but also to other people (e.g., "police uncle").', ans:"True", exp:"正确。拟亲属称谓语（Fictive kinship terms）在中国文化中很常见。"},
@@ -445,6 +450,15 @@
             });
             dom.title.textContent = getModuleTitle(moduleName);
             
+            // 默认设置：连线/名词解释 默认开启乱序，其他默认关闭
+            if (moduleName.startsWith('matching')) {
+                dom.shuffle.checked = true;
+                isShuffled = true;
+            } else {
+                dom.shuffle.checked = false;
+                isShuffled = false;
+            }
+            
             // 手机端自动收起侧边栏
             if (window.innerWidth < 768) {
                 dom.sidebar.classList.add('-translate-x-full');
@@ -525,11 +539,15 @@
                 dom.opts.innerHTML = `
                     <div class="flex gap-2">
                         <input type="text" id="blank-input" class="flex-1 p-3 border-2 border-purple-200 rounded-lg outline-none focus:border-purple-500 transition font-bold text-gray-700" placeholder="请输入答案..." autocomplete="off">
-                        <button onclick="submitBlank()" class="bg-purple-600 text-white px-4 rounded-lg font-bold">检查</button>
+                        <button onclick="submitBlank()" class="bg-purple-600 text-white px-4 rounded-lg font-bold hover:bg-purple-700 transition">检查</button>
                     </div>
                 `;
-                // Focus slightly delayed for mobile keyboard
-                // setTimeout(() => document.getElementById('blank-input').focus(), 100);
+                setTimeout(() => document.getElementById('blank-input').focus(), 100);
+                
+                // Bind Enter key
+                document.getElementById('blank-input').addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') submitBlank();
+                });
             } 
             // Render Multi-select
             else if (qData.type === 'multi') {
@@ -541,12 +559,16 @@
             else if (currentModule.startsWith('tf')) {
                 ['True', 'False'].forEach(opt => createBtn(opt, qData, false));
             } 
+            // Render Matching / MC / Other
             else {
-                // Shuffle options for normal MC/Matching (if needed, otherwise keep order)
                 // Using spread to avoid mutating original
                 const opts = [...qData.opts];
-                // simple shuffle for display
-                opts.sort(() => Math.random() - 0.5);
+                
+                // 关键修正：仅对 "matching_" 开头的模块进行选项乱序，其他（如 MC）保持原样
+                if (currentModule.startsWith('matching')) {
+                    opts.sort(() => Math.random() - 0.5);
+                }
+                
                 opts.forEach(opt => createBtn(opt, qData, false));
             }
         }
@@ -676,25 +698,40 @@
         }
 
         function submitBlank() {
-            if(isProcessing) return;
+            // FIX: Don't check isProcessing here, allow multiple checks if wrong
             const realIndex = questionOrder[currentQuestionIndex];
             const qData = DB[currentModule][realIndex];
             const input = document.getElementById('blank-input');
             const val = input.value.trim().toLowerCase();
             
-            // Flexible matching for "concepts / values"
-            const answers = qData.ans.toLowerCase().split('/').map(s => s.trim());
-            const isMatch = answers.some(a => val === a) || val === qData.ans.toLowerCase();
-
-            input.disabled = true;
+            // Strict matching: split by '/' for multiple possibilities, but require exact match
+            const correctAnswers = qData.ans.toLowerCase().split('/').map(s => s.trim());
             
+            // Check if user input matches any of the correct possibilities
+            const isMatch = correctAnswers.includes(val);
+
+            // Reset classes
+            input.classList.remove('border-red-500', 'bg-red-50', 'text-red-900', 'shake', 'border-green-500', 'bg-green-50', 'text-green-900');
+
             if (isMatch) {
+                input.disabled = true; // Lock only if correct
                 input.classList.add('border-green-500', 'bg-green-50', 'text-green-900');
                 showFeedback(true, qData.exp || "Correct!");
-                autoNext();
+                
+                // Auto jump only if correct
+                isProcessing = true;
+                setTimeout(() => {
+                    if (currentQuestionIndex < DB[currentModule].length - 1) {
+                        nextQuestion();
+                    }
+                    isProcessing = false;
+                }, 1000);
             } else {
+                // Incorrect: Show feedback, Visual Shake, but KEEP ENABLED
+                void input.offsetWidth; // Trigger reflow for animation
                 input.classList.add('border-red-500', 'bg-red-50', 'text-red-900', 'shake');
-                showFeedback(false, `正确答案: ${qData.ans}。${qData.exp || ''}`);
+                input.focus(); // Keep focus
+                showFeedback(false, `正确答案: <span class="font-mono font-bold text-lg text-green-700">${qData.ans}</span><br><span class="text-xs text-gray-500">${qData.exp || ''}</span>`);
             }
         }
 
@@ -717,7 +754,6 @@
         function autoNext() {
             isProcessing = true;
             setTimeout(() => {
-                // 如果是最后一题，不自动跳转，让用户看结果
                 if (currentQuestionIndex < DB[currentModule].length - 1) {
                     nextQuestion();
                 }
@@ -726,6 +762,9 @@
         }
 
         function nextQuestion() {
+            // FIX: Force reset processing state to ensure button always works manually
+            isProcessing = false; 
+            
             if (currentQuestionIndex < DB[currentModule].length - 1) {
                 currentQuestionIndex++;
                 renderQuestion();
