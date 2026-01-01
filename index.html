@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>+1教你学文化 (V11 - Fixed Lookup)</title>
+    <title>+1教你学文化 (V12 - Reverted & Smart)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -79,7 +79,7 @@
     </div>
 
     <script>
-        // 定义所有名词解释的标准答案库，确保 distractors 和 answers 使用完全一致的字符串
+        // --- 1. 名词解释标准库 (Smart Lookup) ---
         const DEFS = {
             1: "Refers to the act and process of sending and receiving messages among people",
             2: "Refers to the process of the sender putting the message into a signal",
@@ -117,7 +117,7 @@
                 { id: 4, q: "Definition of: Avoidance of the unfamiliar", opts: ["Birds of a feather flock together", "Your own culture is correct", "Rigid and irrational generalization about a group", "Paying attention to and doing only one thing at a time"], ans: "Birds of a feather flock together", exp: "Avoidance (回避不熟悉的事物) 常表现为'物以类聚' (Birds of a feather flock together)。" },
                 { id: 5, q: "Definition of: Ethnocentrism", opts: ["Your own culture is correct", "Superior because of color of skin", "Anxiety from losing all familiar signs", "Refers to the process of the sender putting the message into a signal"], ans: "Your own culture is correct", exp: "Ethnocentrism (民族中心主义) 指认为自己的文化是正确的、优越的。" },
             ],
-            // 使用 DEFS 常量重构数据，确保一致性
+            // --- 2. Matching Defs (Using DEFS for Smart Lookup) ---
             matching_defs: [
                 { id: 1, q: "Definition of: Communication", ans: DEFS[1], opts: [DEFS[1], DEFS[6], DEFS[5], DEFS[4]], exp: "Communication (沟通)。" },
                 { id: 2, q: "Definition of: Encoding", ans: DEFS[2], opts: [DEFS[2], DEFS[3], DEFS[1], "The inability to understand what is meant by what is said"], exp: "Encoding (编码)。" },
@@ -146,6 +146,7 @@
                 { id: 25, q: "Definition of: Buffer", ans: DEFS[25], opts: [DEFS[25], DEFS[26], DEFS[22], DEFS[16]], exp: "Buffer (缓冲段)。" },
                 { id: 26, q: "Definition of: Direct plan message", ans: DEFS[26], opts: [DEFS[26], DEFS[25], DEFS[15], DEFS[7]], exp: "Direct plan (直接法)。" }
             ],
+            // --- 3. REVERTED SECTIONS (Based on V6/V8 state as requested) ---
             blanks: [
                 { id: 1, q: "Communication Process: If I am talking with a friend, and I want to tell them I disagree with them. I, the (1)________, will put my thoughts into words.", ans: "sender", exp: "发送者 (Sender)。" },
                 { id: 2, q: "Communication Process: I will put my thoughts into words, or (2)________ them.", ans: "encode", exp: "编码 (Encode)。" },
@@ -329,7 +330,7 @@
                 {id:54, q:"Easterners tend to associate redness with something dangerous, threatening cruelty or blooding and communism.", ans:"False", exp:"错误。这是西方人对红色的联想；东方人通常认为红色代表吉祥、喜庆。"},
                 
                 // --- FIXED QUESTIONS BELOW ---
-                {id:55, q:"Words in general use usually acquire connotational meanings.", ans:"False", exp:"False. (Fixed per Doc). Words in general use typically convey denotational (literal) meaning."},
+                {id:55, q:"Words in general use usually acquire connotational meanings.", ans:"True", exp:"Correct. 一般常用词通常会获得内涵意义 (Connotational meanings)。(Old key F -> New True)"},
                 {id:56, q:"Inductive pattern is less indirect.", ans:"False", exp:"Incorrect. Inductive (specific to general) is usually considered MORE indirect (e.g. Chinese style) than Deductive. (Old key T -> New False)"},
                 {id:57, q:"Members of low uncertainty avoidance cultures use the succinct style.", ans:"False", exp:"Incorrect. Succinct style (silence) is typically found in High Context/High UA cultures. (Old key T -> New False)"},
                 {id:58, q:'In Chinese culture, kinship terms are not only used with one\'s own family, but also to other people (e.g., "police uncle").', ans:"True", exp:"正确。拟亲属称谓语（Fictive kinship terms）在中国文化中很常见。"},
