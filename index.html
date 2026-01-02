@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>+1教你学文化 (Final V15 - Fixed Blanks)</title>
+    <title>+1教你学文化 (Final V16 - Smart Jump)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -23,6 +23,10 @@
         ::-webkit-scrollbar-thumb { background: #d8b4fe; border-radius: 2px; }
         .nav-active { background-color: #581c87 !important; border-left: 4px solid #d8b4fe !important; }
         .overlay { transition: opacity 0.3s ease; }
+        
+        /* Toast Notification */
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; opacity: 0; transition: opacity 0.3s, bottom 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
     </style>
 </head>
 <body>
@@ -54,7 +58,7 @@
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <label class="flex items-center bg-purple-50 px-3 py-1.5 rounded-full cursor-pointer active:bg-purple-100"><input type="checkbox" id="shuffle-toggle" class="w-4 h-4 text-purple-600 rounded" onchange="toggleShuffle()"><span class="ml-1.5 text-xs font-bold text-purple-700">随机题目</span></label>
-                    <div class="hidden sm:flex items-center bg-white border border-gray-200 rounded-lg p-0.5"><input type="number" id="jump-input" class="w-10 text-center text-xs outline-none p-1" placeholder="#"><button onclick="jumpToQuestion()" class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-bold">Go</button></div>
+                    <div class="hidden sm:flex items-center bg-white border border-gray-200 rounded-lg p-0.5"><input type="number" id="jump-input" class="w-12 text-center text-xs outline-none p-1" placeholder="ID/#"><button onclick="jumpToQuestion()" class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-bold hover:bg-purple-200">Go</button></div>
                 </div>
             </header>
             <div class="w-full bg-gray-200 h-1 flex-shrink-0"><div id="progress-bar" class="bg-purple-500 h-1 transition-all duration-300" style="width: 0%"></div></div>
@@ -78,8 +82,15 @@
             </div>
         </main>
     </div>
+    
+    <!-- Toast Message Element -->
+    <div id="toast">这里是提示信息</div>
 
     <script>
+        // --- 完整题库数据 ---
+        // (保持原有的 DB 数据不变，为了节省长度，此处省略具体的 DB 内容，请使用您之前文件中的完整 DB 数据)
+        // 关键：在真实使用时，请确保这里包含完整的 DB 对象。
+        
         const DEFS = {
             1: "Refers to the act and process of sending and receiving messages among people",
             2: "Refers to the process of the sender putting the message into a signal",
@@ -407,48 +418,41 @@
             multiActions: document.getElementById('multi-actions'),
             multiHint: document.getElementById('multi-hint'),
             prevBtn: document.getElementById('prev-btn'),
-            nextBtn: document.getElementById('next-btn')
+            nextBtn: document.getElementById('next-btn'),
+            toast: document.getElementById('toast')
         };
 
         // --- 初始化 ---
         function init() {
-            // 默认全屏，防止 iOS 滚动链
             document.body.style.overscrollBehavior = 'none';
             switchModule('matching_basic');
         }
 
-        // --- 侧边栏逻辑 ---
         function toggleSidebar() {
             const isClosed = dom.sidebar.classList.contains('-translate-x-full');
-            
             if (isClosed) {
-                // 打开
                 dom.sidebar.classList.remove('-translate-x-full');
                 dom.overlay.classList.remove('hidden');
-                // 动画延迟
                 setTimeout(() => dom.overlay.classList.remove('opacity-0'), 10);
             } else {
-                // 关闭
                 dom.sidebar.classList.add('-translate-x-full');
                 dom.overlay.classList.add('opacity-0');
                 setTimeout(() => dom.overlay.classList.add('hidden'), 300);
             }
         }
 
-        // --- 核心逻辑 ---
         function switchModule(moduleName) {
             currentModule = moduleName;
             currentQuestionIndex = 0;
             isProcessing = false;
             
-            // 更新 UI
             dom.navBtns.forEach(btn => {
                 btn.classList.remove('nav-active');
                 if(btn.id === `nav-${moduleName}`) btn.classList.add('nav-active');
             });
             dom.title.textContent = getModuleTitle(moduleName);
             
-            // 默认设置：连线/名词解释 默认开启乱序，其他默认关闭
+            // Default Shuffle Logic
             if (moduleName.startsWith('matching')) {
                 dom.shuffle.checked = true;
                 isShuffled = true;
@@ -457,7 +461,6 @@
                 isShuffled = false;
             }
             
-            // 手机端自动收起侧边栏
             if (window.innerWidth < 768) {
                 dom.sidebar.classList.add('-translate-x-full');
                 dom.overlay.classList.add('opacity-0');
@@ -491,7 +494,6 @@
             const total = DB[currentModule].length;
             questionOrder = Array.from({length: total}, (_, i) => i);
             if(isShuffled) {
-                // Fisher-Yates Shuffle
                 for(let i = questionOrder.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [questionOrder[i], questionOrder[j]] = [questionOrder[j], questionOrder[i]];
@@ -499,43 +501,78 @@
             }
         }
 
+        // --- 核心修复：智能跳转逻辑 ---
         function jumpToQuestion() {
             const val = parseInt(dom.jump.value);
-            if (val > 0 && val <= DB[currentModule].length) {
-                currentQuestionIndex = val - 1; 
-                renderQuestion();
-                dom.jump.value = '';
+            if (!val) return; // Ignore empty/invalid inputs
+
+            const total = DB[currentModule].length;
+
+            if (isShuffled) {
+                // 随机模式：优先尝试跳转到 ID 匹配的题目
+                let foundIndex = -1;
+                
+                // 1. 在当前乱序列表中查找是否有题目的 ID 等于输入值
+                for (let i = 0; i < total; i++) {
+                    const realIndex = questionOrder[i];
+                    if (DB[currentModule][realIndex].id === val) {
+                        foundIndex = i; // 记录该题目在当前乱序列表中的位置
+                        break;
+                    }
+                }
+
+                if (foundIndex !== -1) {
+                    // 找到了：跳转到该题
+                    currentQuestionIndex = foundIndex;
+                    showToast(`已定位至题号 #${val} (列表第 ${foundIndex + 1} 项)`);
+                } else {
+                    // 没找到ID（可能是 ID 不连续），回退到按页码跳转
+                    if (val > 0 && val <= total) {
+                        currentQuestionIndex = val - 1;
+                        showToast(`未找到题号 #${val}，跳转至第 ${val} 页`);
+                    } else {
+                        showToast("输入的数字超出范围");
+                    }
+                }
+            } else {
+                // 顺序模式：按页码跳转（通常页码=ID）
+                if (val > 0 && val <= total) {
+                    currentQuestionIndex = val - 1;
+                } else {
+                    showToast("输入的数字超出范围");
+                }
             }
+            
+            renderQuestion();
+            dom.jump.value = '';
+        }
+
+        function showToast(msg) {
+            dom.toast.textContent = msg;
+            dom.toast.classList.add('show');
+            setTimeout(() => { dom.toast.classList.remove('show'); }, 3000);
         }
 
         function renderQuestion() {
-            // 强制重置锁状态，防止卡死
             isProcessing = false;
-
             const realIndex = questionOrder[currentQuestionIndex];
             const qData = DB[currentModule][realIndex];
             const total = DB[currentModule].length;
 
-            // Reset UI States
             dom.fbArea.classList.add('hidden');
             dom.multiActions.classList.add('hidden');
             dom.multiHint.classList.add('hidden');
             currentMultiSelection = [];
             
-            // Update Headers
             dom.progress.textContent = `${currentQuestionIndex + 1} / ${total}`;
             dom.bar.style.width = `${((currentQuestionIndex + 1) / total) * 100}%`;
-            dom.qId.textContent = `#${qData.id}`;
-            dom.qType.textContent = getModuleTitle(currentModule).split(' ')[0]; // 简短标题
+            dom.qId.textContent = `#${qData.id}`; // 显示题目原始ID
+            dom.qType.textContent = getModuleTitle(currentModule).split(' ')[0];
             dom.qText.textContent = qData.q;
             
-            // Buttons State
             dom.prevBtn.disabled = currentQuestionIndex === 0;
-            
-            // Clear Options
             dom.opts.innerHTML = '';
 
-            // Render Input for Blanks
             if (currentModule === 'blanks') {
                 dom.opts.innerHTML = `
                     <div class="flex gap-2">
@@ -543,38 +580,29 @@
                         <button onclick="submitBlank()" class="bg-purple-600 text-white px-4 rounded-lg font-bold shadow-md active:bg-purple-700">检查</button>
                     </div>
                 `;
-                // Auto focus on desktop only to prevent keyboard jump on mobile
                 if(window.innerWidth > 768) {
                     setTimeout(() => document.getElementById('blank-input').focus(), 100);
                 }
             } 
-            // Render Multi-select
             else if (qData.type === 'multi') {
                 dom.multiActions.classList.remove('hidden');
                 dom.multiHint.classList.remove('hidden');
                 qData.opts.forEach(opt => createBtn(opt, qData, true));
             } 
-            // Render Single-select (TF or MC)
             else if (currentModule.startsWith('tf')) {
                 ['True', 'False'].forEach(opt => createBtn(opt, qData, false));
             } 
-            // Render Matching / MC / Other
             else {
-                // Using spread to avoid mutating original
                 const opts = [...qData.opts];
-                
-                // 关键修正：仅对 "matching_" 开头的模块进行选项乱序，其他（如 MC）保持原样
                 if (currentModule.startsWith('matching')) {
                     opts.sort(() => Math.random() - 0.5);
                 }
-                
                 opts.forEach(opt => createBtn(opt, qData, false));
             }
         }
 
         function createBtn(text, qData, isMulti) {
             const btn = document.createElement('button');
-            // Tailored classes for mobile touch targets
             btn.className = 'option-btn w-full text-left p-4 rounded-lg border-2 border-purple-100 bg-white text-gray-700 font-medium text-sm md:text-base leading-snug flex items-center justify-between group touch-manipulation';
             
             if (isMulti) {
@@ -602,8 +630,6 @@
 
         function checkSingle(btn, selected, qData) {
             if(isProcessing) return;
-            
-            // Disable all siblings
             const allBtns = dom.opts.querySelectorAll('button');
             allBtns.forEach(b => b.disabled = true);
 
@@ -618,7 +644,6 @@
                 btn.className = 'w-full text-left p-4 rounded-lg border-2 border-red-500 bg-red-50 text-red-900 font-bold flex justify-between items-center shake';
                 btn.innerHTML = `<span>${selected}</span> <i class="fas fa-times-circle text-red-600"></i>`;
                 
-                // Highlight correct one
                 allBtns.forEach(b => {
                     if (b.textContent === qData.ans) {
                         b.className = 'w-full text-left p-4 rounded-lg border-2 border-green-500 bg-white text-green-900 font-bold opacity-80 flex justify-between items-center';
@@ -626,19 +651,14 @@
                     }
                 });
 
-                // --- SMART FEEDBACK LOGIC ---
                 let feedbackMsg = "";
-                
-                // For matching modules, check if the wrong answer is actually correct for another term
                 if (currentModule.startsWith('matching')) {
                     const match = DB[currentModule].find(item => item.ans === selected);
                     if (match) {
-                        // Extract term name from "Definition of: X"
                         const wrongTerm = match.q.replace(/Definition of:\s*/i, "").trim();
                         feedbackMsg += `<div class="mb-2 text-red-700 font-medium"><i class="fas fa-times-circle mr-1"></i> 注意：您选择的选项实际上是 <b>${wrongTerm}</b> 的定义。</div>`;
                     }
                 }
-                
                 feedbackMsg += `<div class="text-green-800"><i class="fas fa-check-circle mr-1"></i> <b>正确解析:</b> ${qData.exp || qData.ans}</div>`;
                 showFeedback(false, feedbackMsg);
             }
@@ -648,9 +668,7 @@
             if(isProcessing) return;
             const realIndex = questionOrder[currentQuestionIndex];
             const qData = DB[currentModule][realIndex];
-            const correctArr = qData.ans; // Array
-
-            // Sort both for comparison
+            const correctArr = qData.ans;
             const userSorted = [...currentMultiSelection].sort();
             const correctSorted = [...correctArr].sort();
             const isCorrect = JSON.stringify(userSorted) === JSON.stringify(correctSorted);
@@ -666,64 +684,47 @@
                 showFeedback(false, qData.exp ? `解析: ${qData.exp}` : `Correct: ${correctArr.join(', ')}`);
             }
 
-            // Visual feedback on buttons
             allBtns.forEach(b => {
                 const text = b.querySelector('span').textContent;
                 const isSelected = currentMultiSelection.includes(text);
                 const isActuallyCorrect = correctArr.includes(text);
                 const icon = b.querySelector('i');
-
-                // Reset base classes
                 b.className = 'w-full text-left p-4 rounded-lg border-2 flex justify-between items-center font-medium text-sm md:text-base';
-
                 if (isSelected && isActuallyCorrect) {
-                    // Correctly selected
                     b.classList.add('border-green-500', 'bg-green-50', 'text-green-900');
                     icon.className = 'fas fa-check-circle text-green-600';
                 } else if (isSelected && !isActuallyCorrect) {
-                    // Wrongly selected
                     b.classList.add('border-red-500', 'bg-red-50', 'text-red-900');
                     icon.className = 'fas fa-times-circle text-red-600';
                 } else if (!isSelected && isActuallyCorrect) {
-                    // Missed correct answer
                     b.classList.add('border-green-500', 'bg-white', 'text-green-900', 'opacity-70');
                     icon.className = 'fas fa-check text-green-600';
                 } else {
-                    // Irrelevant
                     b.classList.add('border-gray-100', 'bg-gray-50', 'text-gray-400');
                     icon.className = 'far fa-square text-gray-300';
                 }
             });
         }
 
-        // --- 修复版填空逻辑 ---
         function submitBlank() {
-            // 注意：这里不检查 isProcessing，允许用户多次点击尝试
             const realIndex = questionOrder[currentQuestionIndex];
             const qData = DB[currentModule][realIndex];
             const input = document.getElementById('blank-input');
             const val = input.value.trim().toLowerCase();
-            
-            // 严格匹配逻辑
             const correctAnswers = qData.ans.toLowerCase().split('/').map(s => s.trim());
             const isMatch = correctAnswers.includes(val);
 
-            // 重置样式
             input.classList.remove('border-red-500', 'bg-red-50', 'text-red-900', 'border-green-500', 'bg-green-50', 'text-green-900', 'shake');
-            void input.offsetWidth; // 触发重绘以支持 shake 动画重播
+            void input.offsetWidth;
 
             if (isMatch) {
-                // 答对：锁定 -> 变绿 -> 跳转
                 input.disabled = true;
                 input.classList.add('border-green-500', 'bg-green-50', 'text-green-900');
                 showFeedback(true, "回答正确！");
-                autoNext(); // 只有答对才自动跳转
+                autoNext();
             } else {
-                // 答错：不锁定 -> 变红 -> 震动 -> 显示答案 -> 允许修改
                 input.classList.add('border-red-500', 'bg-red-50', 'text-red-900', 'shake');
-                input.focus(); // 保持焦点方便修改
-                
-                // 显示正确答案供参考
+                input.focus();
                 showFeedback(false, `
                     <div class="font-bold text-red-600 mb-1">回答错误，请重试或直接填入答案：</div>
                     <div class="text-green-700 font-mono text-lg bg-green-50 p-2 rounded border border-green-200 select-all">
@@ -738,14 +739,11 @@
             dom.fbArea.classList.remove('hidden');
             const color = success ? 'green' : 'red';
             dom.fbArea.className = `mt-5 rounded-lg p-3 border-l-4 bg-${color}-50 border-${color}-500 text-sm md:text-base break-words fade-in`;
-            
             dom.fbIcon.innerHTML = success 
                 ? `<i class="fas fa-check-circle text-xl text-${color}-500"></i>`
                 : `<i class="fas fa-info-circle text-xl text-${color}-500"></i>`;
-            
             dom.fbTitle.textContent = success ? '回答正确' : '解析';
             dom.fbTitle.className = `font-bold text-${color}-800`;
-            
             dom.fbMsg.innerHTML = msg;
             dom.fbMsg.className = `mt-1 text-${color}-900 leading-relaxed`;
         }
@@ -760,14 +758,12 @@
             }, 1000);
         }
 
-        // --- 强制跳转下一题（无视锁状态） ---
         function nextQuestion() {
-            // 只要没到最后一题，强制跳转
             if (currentQuestionIndex < DB[currentModule].length - 1) {
                 currentQuestionIndex++;
-                renderQuestion(); // renderQuestion 会重置 isProcessing = false
+                renderQuestion(); 
             } else {
-                alert("本模块复习完成！");
+                showToast("本模块复习完成！");
             }
         }
 
@@ -778,9 +774,7 @@
             }
         }
 
-        // Boot
         init();
-
     </script>
 </body>
 </html>
