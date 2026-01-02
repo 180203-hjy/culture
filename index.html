@@ -80,7 +80,6 @@
     </div>
 
     <script>
-        // V11 标准化定义库 (用于名词解释)
         const DEFS = {
             1: "Refers to the act and process of sending and receiving messages among people",
             2: "Refers to the process of the sender putting the message into a signal",
@@ -111,7 +110,6 @@
         };
 
         const DB = {
-            // V6 核心连线
             matching_basic: [
                 { id: 1, q: "Definition of: Racism", opts: ["Superior because of color of skin", "Anxiety from losing all familiar signs", "Rigid and irrational generalization about a group", "The belief that your own culture is correct"], ans: "Superior because of color of skin", exp: "Racism (种族主义) 指的是仅仅因为肤色或种族而产生的优越感。" },
                 { id: 2, q: "Definition of: Culture Shock", opts: ["Anxiety from losing all familiar signs", "Superior because of color of skin", "Refers to communication norms in different cultures", "The feeling of confusion or disorientation"], ans: "Anxiety from losing all familiar signs", exp: "Culture Shock (文化冲击) 是指因为失去了熟悉的符号和环境而产生的焦虑感。" },
@@ -119,7 +117,7 @@
                 { id: 4, q: "Definition of: Avoidance of the unfamiliar", opts: ["Birds of a feather flock together", "Your own culture is correct", "Rigid and irrational generalization about a group", "Paying attention to and doing only one thing at a time"], ans: "Birds of a feather flock together", exp: "Avoidance (回避不熟悉的事物) 常表现为'物以类聚' (Birds of a feather flock together)。" },
                 { id: 5, q: "Definition of: Ethnocentrism", opts: ["Your own culture is correct", "Superior because of color of skin", "Anxiety from losing all familiar signs", "Refers to the process of the sender putting the message into a signal"], ans: "Your own culture is correct", exp: "Ethnocentrism (民族中心主义) 指认为自己的文化是正确的、优越的。" },
             ],
-            // V11 名词解释 (使用DEFS)
+            // 名词解释 - V11 (含反向查找支持)
             matching_defs: [
                 { id: 1, q: "Definition of: Communication", ans: DEFS[1], opts: [DEFS[1], DEFS[6], DEFS[5], DEFS[4]], exp: "Communication (沟通)。" },
                 { id: 2, q: "Definition of: Encoding", ans: DEFS[2], opts: [DEFS[2], DEFS[3], DEFS[1], "The inability to understand what is meant by what is said"], exp: "Encoding (编码)。" },
@@ -148,7 +146,7 @@
                 { id: 25, q: "Definition of: Buffer", ans: DEFS[25], opts: [DEFS[25], DEFS[26], DEFS[22], DEFS[16]], exp: "Buffer (缓冲段)。" },
                 { id: 26, q: "Definition of: Direct plan message", ans: DEFS[26], opts: [DEFS[26], DEFS[25], DEFS[15], DEFS[7]], exp: "Direct plan (直接法)。" }
             ],
-            // V6 理论填空
+            // 理论填空 - 恢复到 V6
             blanks: [
                 { id: 1, q: "Communication Process: If I am talking with a friend, and I want to tell them I disagree with them. I, the (1)________, will put my thoughts into words.", ans: "sender", exp: "发送者 (Sender)。" },
                 { id: 2, q: "Communication Process: I will put my thoughts into words, or (2)________ them.", ans: "encode", exp: "编码 (Encode)。" },
@@ -161,7 +159,7 @@
                 { id: 9, q: "Iceberg Model: The tip, the portion above the water, represents (9)________ elements of culture that can be seen by all.", ans: "visible", exp: "可见的 (visible)。" },
                 { id: 10, q: "Iceberg Model: The cultural elements below the waterline are (10)________ and not readily recognized by those outside of our culture.", ans: "invisible", exp: "不可见的 (invisible)。" }
             ],
-            // V6 选择题 (70题)
+            // 选择题 - 恢复到 V6 (70题完整版)
             mc: [
                 {id:1, q:"_____ is the total accumulation of beliefs, customs, values, behaviors, institutions and communication patterns that are shared, learned and passed down through the generations in an identifiable group of people.", opts:["intercultural communication", "culture", "business communication", "feedback"], ans:"culture", exp:"Culture (文化) 是一个群体共享、习得并代代相传的信仰、习俗、行为等的总和。"},
                 {id:2, q:"_____ is the communication at the same level in an organization.", opts:["horizontal communication", "ethnocentrism", "business communication", "lateral communication"], ans:"lateral communication", exp:"Lateral (或 Horizontal) communication 指组织中同一层级之间的沟通。"},
@@ -244,7 +242,7 @@
                 // MULTI-SELECT END
                 {id:70, type:"multi", q:"In low-context cultures, a deliberate concealment of emotion is considered to be __________.", opts:["poker-faced", "shamed", "insincere", "resentful"], ans:["poker-faced", "insincere"], exp:"Updated Key: A, C. 在低语境文化中，刻意隐藏情感常被认为是不真诚或扑克脸。"}
             ],
-            // V6 判断题 I
+            // 判断题 I - 恢复到 V6
             tf_a: [
                 {id:1, q:"We are born with our cultural characteristics.", ans:"False", exp:"错误。文化是后天习得的 (learned)，并非与生俱来 (born with)。(Group A)"},
                 {id:2, q:"What we eat is a biological process and how we eat it is cultural.", ans:"True", exp:"正确。'吃'是生物需求，但饮食习惯（如餐具、礼仪）是文化产物。"},
@@ -277,7 +275,7 @@
                 {id:29, q:"Persuasion is accomplished through a direct approach in low-context cultures.", ans:"True", exp:"正确 (Correct per Key). (Note: Originally F, Key indicates T)."},
                 {id:30, q:"German reports stress content over form.", ans:"True", exp:"正确。德国报告注重实质内容和严谨性。"}
             ],
-            // V6 判断题 II
+            // 判断题 II - 恢复到 V6
             tf_b: [
                 {id:1, q:"Intercultural communication takes place between people whose cultural perception and symbol systems are exactly same.", ans:"False", exp:"错误。如果文化感知和符号系统完全相同，就不存在跨文化（Intercultural）沟通，而是文化内沟通。"},
                 {id:2, q:"Receiver refers to the person who transmits a message.", ans:"False", exp:"错误。Receiver 是接收者，负责解码。Sender 才是发送（transmits）信息的人。"},
@@ -334,8 +332,8 @@
                 {id:53, q:"Cricket in English is a happy insect... Yet in Chinese cricket signifies the coming of autumn, so there is always a feeling of sadness attached to it.", ans:"True", exp:"正确。同一事物（蟋蟀）在不同文化中引发不同的情感联想。"},
                 {id:54, q:"Easterners tend to associate redness with something dangerous, threatening cruelty or blooding and communism.", ans:"False", exp:"错误。这是西方人对红色的联想；东方人通常认为红色代表吉祥、喜庆。"},
                 
-                // --- FIXED QUESTIONS BELOW (V6 Logic) ---
-                {id:55, q:"Words in general use usually acquire connotational meanings.", ans:"False", exp:"False. (Fixed per Doc). Words in general use typically convey denotational (literal) meaning."},
+                // --- FIXED QUESTIONS BELOW ---
+                {id:55, q:"Words in general use usually acquire connotational meanings.", ans:"True", exp:"Correct. 一般常用词通常会获得内涵意义 (Connotational meanings)。(Old key F -> New True)"},
                 {id:56, q:"Inductive pattern is less indirect.", ans:"False", exp:"Incorrect. Inductive (specific to general) is usually considered MORE indirect (e.g. Chinese style) than Deductive. (Old key T -> New False)"},
                 {id:57, q:"Members of low uncertainty avoidance cultures use the succinct style.", ans:"False", exp:"Incorrect. Succinct style (silence) is typically found in High Context/High UA cultures. (Old key T -> New False)"},
                 {id:58, q:'In Chinese culture, kinship terms are not only used with one\'s own family, but also to other people (e.g., "police uncle").', ans:"True", exp:"正确。拟亲属称谓语（Fictive kinship terms）在中国文化中很常见。"},
@@ -511,6 +509,9 @@
         }
 
         function renderQuestion() {
+            // 强制重置锁状态，防止卡死
+            isProcessing = false;
+
             const realIndex = questionOrder[currentQuestionIndex];
             const qData = DB[currentModule][realIndex];
             const total = DB[currentModule].length;
@@ -539,15 +540,13 @@
                 dom.opts.innerHTML = `
                     <div class="flex gap-2">
                         <input type="text" id="blank-input" class="flex-1 p-3 border-2 border-purple-200 rounded-lg outline-none focus:border-purple-500 transition font-bold text-gray-700" placeholder="请输入答案..." autocomplete="off">
-                        <button onclick="submitBlank()" class="bg-purple-600 text-white px-4 rounded-lg font-bold hover:bg-purple-700 transition">检查</button>
+                        <button onclick="submitBlank()" class="bg-purple-600 text-white px-4 rounded-lg font-bold shadow-md active:bg-purple-700">检查</button>
                     </div>
                 `;
-                setTimeout(() => document.getElementById('blank-input').focus(), 100);
-                
-                // Bind Enter key
-                document.getElementById('blank-input').addEventListener('keypress', function (e) {
-                    if (e.key === 'Enter') submitBlank();
-                });
+                // Auto focus on desktop only to prevent keyboard jump on mobile
+                if(window.innerWidth > 768) {
+                    setTimeout(() => document.getElementById('blank-input').focus(), 100);
+                }
             } 
             // Render Multi-select
             else if (qData.type === 'multi') {
@@ -697,41 +696,41 @@
             });
         }
 
+        // --- 修复版填空逻辑 ---
         function submitBlank() {
-            // FIX: Don't check isProcessing here, allow multiple checks if wrong
+            // 注意：这里不检查 isProcessing，允许用户多次点击尝试
             const realIndex = questionOrder[currentQuestionIndex];
             const qData = DB[currentModule][realIndex];
             const input = document.getElementById('blank-input');
             const val = input.value.trim().toLowerCase();
             
-            // Strict matching: split by '/' for multiple possibilities, but require exact match
+            // 严格匹配逻辑
             const correctAnswers = qData.ans.toLowerCase().split('/').map(s => s.trim());
-            
-            // Check if user input matches any of the correct possibilities
             const isMatch = correctAnswers.includes(val);
 
-            // Reset classes
-            input.classList.remove('border-red-500', 'bg-red-50', 'text-red-900', 'shake', 'border-green-500', 'bg-green-50', 'text-green-900');
+            // 重置样式
+            input.classList.remove('border-red-500', 'bg-red-50', 'text-red-900', 'border-green-500', 'bg-green-50', 'text-green-900', 'shake');
+            void input.offsetWidth; // 触发重绘以支持 shake 动画重播
 
             if (isMatch) {
-                input.disabled = true; // Lock only if correct
+                // 答对：锁定 -> 变绿 -> 跳转
+                input.disabled = true;
                 input.classList.add('border-green-500', 'bg-green-50', 'text-green-900');
-                showFeedback(true, qData.exp || "Correct!");
-                
-                // Auto jump only if correct
-                isProcessing = true;
-                setTimeout(() => {
-                    if (currentQuestionIndex < DB[currentModule].length - 1) {
-                        nextQuestion();
-                    }
-                    isProcessing = false;
-                }, 1000);
+                showFeedback(true, "回答正确！");
+                autoNext(); // 只有答对才自动跳转
             } else {
-                // Incorrect: Show feedback, Visual Shake, but KEEP ENABLED
-                void input.offsetWidth; // Trigger reflow for animation
+                // 答错：不锁定 -> 变红 -> 震动 -> 显示答案 -> 允许修改
                 input.classList.add('border-red-500', 'bg-red-50', 'text-red-900', 'shake');
-                input.focus(); // Keep focus
-                showFeedback(false, `正确答案: <span class="font-mono font-bold text-lg text-green-700">${qData.ans}</span><br><span class="text-xs text-gray-500">${qData.exp || ''}</span>`);
+                input.focus(); // 保持焦点方便修改
+                
+                // 显示正确答案供参考
+                showFeedback(false, `
+                    <div class="font-bold text-red-600 mb-1">回答错误，请重试或直接填入答案：</div>
+                    <div class="text-green-700 font-mono text-lg bg-green-50 p-2 rounded border border-green-200 select-all">
+                        ${qData.ans}
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">${qData.exp || ''}</div>
+                `);
             }
         }
 
@@ -761,13 +760,12 @@
             }, 1000);
         }
 
+        // --- 强制跳转下一题（无视锁状态） ---
         function nextQuestion() {
-            // FIX: Force reset processing state to ensure button always works manually
-            isProcessing = false; 
-            
+            // 只要没到最后一题，强制跳转
             if (currentQuestionIndex < DB[currentModule].length - 1) {
                 currentQuestionIndex++;
-                renderQuestion();
+                renderQuestion(); // renderQuestion 会重置 isProcessing = false
             } else {
                 alert("本模块复习完成！");
             }
